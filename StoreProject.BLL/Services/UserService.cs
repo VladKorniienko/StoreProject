@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using StoreProject.BLL.Dtos;
+using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
@@ -25,7 +25,7 @@ namespace StoreProject.BLL.Services
 
         public IEnumerable<UserDto> GetUsers()
         {
-            var users = _unitOfWork.Users.GetAll();
+            var users = _unitOfWork.Users.GetAllWithProducts();
             var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
             return usersDto;
         }

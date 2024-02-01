@@ -5,6 +5,7 @@ using StoreProject.DAL.Context;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Repositories;
 using StoreProject.DAL.UnitOfWork;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 

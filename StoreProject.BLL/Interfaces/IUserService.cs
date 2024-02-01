@@ -1,4 +1,4 @@
-﻿using StoreProject.BLL.Dtos;
+﻿using StoreProject.BLL.Dtos.User;
 
 namespace StoreProject.BLL.Interfaces
 {

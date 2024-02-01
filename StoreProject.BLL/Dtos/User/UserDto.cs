@@ -1,6 +1,7 @@
-﻿using StoreProject.DAL.Models;
+﻿using StoreProject.BLL.Dtos.Product;
+using StoreProject.DAL.Models;
 
-namespace StoreProject.BLL.Dtos
+namespace StoreProject.BLL.Dtos.User
 {
     public class UserDto
     {
@@ -9,6 +10,6 @@ namespace StoreProject.BLL.Dtos
         public string? Email { get; set; }
         public string? Password { get; set; }
         public decimal Balance { get; set; }
-        public List<Product> Products { get; } = new();
+        public List<ProductPartialDto> Products { get; } = new();
     }
 }

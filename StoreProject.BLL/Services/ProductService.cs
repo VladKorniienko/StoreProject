@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using StoreProject.BLL.Dtos;
+using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
@@ -92,7 +92,7 @@ namespace StoreProject.BLL.Services
 
             if (existingProduct == null || existingUser == null)
             {
-                error = "Product or user not found";
+                error = "Product or User not found";
                 return false;
             }
             else
@@ -100,7 +100,6 @@ namespace StoreProject.BLL.Services
                 existingProduct.Users.Add(existingUser);
                 _unitOfWork.Products.Update(existingProduct);
                 _unitOfWork.Save();
-                var a = _unitOfWork.Products.GetById(productId);
                 error = "";
                 return true;
             }

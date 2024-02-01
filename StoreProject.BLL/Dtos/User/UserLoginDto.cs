@@ -1,4 +1,4 @@
-﻿namespace StoreProject.BLL.Dtos
+﻿namespace StoreProject.BLL.Dtos.User
 {
     public class UserLoginDto
     {

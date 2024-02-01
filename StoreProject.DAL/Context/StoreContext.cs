@@ -15,7 +15,6 @@ namespace StoreProject.DAL.Context
         }
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<ProductUser> ProductUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,10 +27,6 @@ namespace StoreProject.DAL.Context
             modelBuilder.Entity<User>()
                 .Property(u => u.Username)
                 .IsRequired();
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Products)
-                .WithMany(u => u.Users)
-                .UsingEntity<ProductUser>();
         }
     }
 }
