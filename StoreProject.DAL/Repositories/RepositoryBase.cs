@@ -37,14 +37,14 @@ namespace StoreProject.DAL.Repositories
             }
         }
 
-        public IQueryable<T> Find(Expression<Func<T, bool>> expression)
+        public IEnumerable<T> Find(Expression<Func<T, bool>> expression)
         {
-            return _dbContext.Set<T>().Where(expression).AsNoTracking();
+            return _dbContext.Set<T>().AsNoTracking().Where(expression);
         }
 
-        public IQueryable<T> GetAll()
+        public IEnumerable<T> GetAll()
         {
-            return _dbContext.Set<T>().AsNoTracking();
+            return _dbContext.Set<T>();
         }
 
         public T GetById(int id)

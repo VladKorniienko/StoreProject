@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StoreProject.BLL.Dtos;
+using StoreProject.BLL.Interfaces;
+using StoreProject.BLL.Services;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.UnitOfWork;
 
@@ -10,36 +13,61 @@ namespace StoreProject.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        // GET: api/<ValuesController>
+
+        private readonly IProductService _productService;
+        public ProductController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        // GET: api/<ProductController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            return new string[] { "value1", "value2" };
+            var products = _productService.GetProducts();
+            return Ok(products);
         }
 
-        // GET api/<ValuesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<ValuesController>
+        // POST api/<ProductController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<ProductDto>> PostProduct(ProductDto newProduct)
         {
+            if (!_productService.AddProduct(newProduct, out ProductDto createdProductDto, out string error))
+                return BadRequest(error);
+            return Created("", createdProductDto);
         }
 
-        // PUT api/<ValuesController>/5
+        // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<ProductDto>> PutProduct(int id, ProductDto product)
         {
+            if (id != product.Id)
+            {
+                return BadRequest();
+            }
+            if (!_productService.UpdateProduct(product, out string error))
+                return NotFound(error);
+            return NoContent();
         }
-
-        // DELETE api/<ValuesController>/5
+        // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
+            if (!_productService.DeleteProduct(id, out string error))
+            {
+                return NotFound(error);
+            }
+            return NoContent();
+        }
+        // PUT: api/Products/productId/Users/userId
+        [HttpPut("{productId}/userId")]
+        public async Task<IActionResult> AddUser (int productId, int userId)
+        {
+            if(!_productService.AddUser(productId,userId, out string error))
+            {
+                return NotFound(error);
+            }
+            return NoContent();
         }
     }
 }

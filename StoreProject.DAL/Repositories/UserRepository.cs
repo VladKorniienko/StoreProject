@@ -1,4 +1,5 @@
-﻿using StoreProject.DAL.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using StoreProject.DAL.Context;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
 using System;
@@ -13,6 +14,16 @@ namespace StoreProject.DAL.Repositories
     {
         public UserRepository(StoreContext dbContext) : base(dbContext)
         {
+        }
+
+        public IEnumerable<User> GetAllWithProducts()
+        {
+            return _dbContext.Users.Include(u => u.Products).ToList();
+        }
+
+        public IEnumerable<User> GetByIdWithProducts(int id)
+        {
+            return _dbContext.Users.Where(u => u.Id == id).Include(u => u.Products);
         }
     }
 }
