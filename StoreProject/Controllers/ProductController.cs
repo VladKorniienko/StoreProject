@@ -24,17 +24,37 @@ namespace StoreProject.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            var products = _productService.GetProducts();
-            return Ok(products);
+            try
+            {
+                var products = await _productService.GetProducts();
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                //logging
+                return StatusCode(500, "An unexpected error occurred while retrieving products.");
+            }
         }
 
         // POST api/<ProductController>
         [HttpPost]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductDto newProduct)
         {
-            if (!_productService.AddProduct(newProduct, out ProductDto createdProductDto, out string error))
-                return BadRequest(error);
-            return Created("", createdProductDto);
+            try
+            {
+                var createdProductDto = await _productService.AddProduct(newProduct);
+                return Created("", createdProductDto);
+            }
+            catch (ArgumentException ex)
+            {
+                //logging
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //logging
+                return StatusCode(500, "An unexpected error occurred while adding the product.");
+            }
         }
 
         // PUT api/<ProductController>/5
@@ -45,29 +65,60 @@ namespace StoreProject.Controllers
             {
                 return BadRequest();
             }
-            if (!_productService.UpdateProduct(product, out string error))
-                return NotFound(error);
-            return NoContent();
+            try
+            {
+                await _productService.UpdateProduct(product);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //logging
+                return StatusCode(500, "An unexpected error occurred while updating the product.");
+            }
         }
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (!_productService.DeleteProduct(id, out string error))
+            try
             {
-                return NotFound(error);
+                await _productService.DeleteProduct(id);
+                return NoContent();
             }
-            return NoContent();
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //logging
+                return StatusCode(500, "An unexpected error occurred while deleting the product.");
+            }
+
         }
         // PUT: api/Products/productId/Users/userId
         [HttpPut("{productId}/userId")]
-        public async Task<IActionResult> AddUser (int productId, int userId)
+        public async Task<IActionResult> AddUser(int productId, int userId)
         {
-            if(!_productService.AddUser(productId,userId, out string error))
+            try
             {
-                return NotFound(error);
+                await _productService.AddUser(productId, userId);
+                return NoContent();
             }
-            return NoContent();
+            catch (ArgumentNullException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                //logging
+                return StatusCode(500, "An unexpected error occurred while adding the product.");
+            }
+
         }
     }
 }

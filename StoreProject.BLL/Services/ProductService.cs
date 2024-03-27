@@ -17,90 +17,81 @@ namespace StoreProject.BLL.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<ProductDto> GetProducts()
+        public async Task <IEnumerable<ProductDto>> GetProducts()
         {
             var products = _unitOfWork.Products.GetAllWithUsers();
             var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
             return productsDto;
         }
 
-        public ProductDto GetProduct(int id)
+        public async Task<ProductDto> GetProduct(int id)
         {
             var product = _unitOfWork.Products.GetById(id);
             var productDto = _mapper.Map<ProductDto>(product);
             return productDto;
         }
 
-        public bool AddProduct(ProductDto newProductDto, out ProductDto createdProductDto, out string error)
+        // public bool AddProduct(ProductDto newProductDto, out ProductDto createdProductDto, out string error)
+        public async Task<ProductDto> AddProduct(ProductDto newProductDto)
         {
             //check wheter the product with the same name already exists in db
             if (_unitOfWork.Products.Find(p => p.Name == newProductDto.Name).Any())
             {
-                error = "Product with the same name already exists";
-                createdProductDto = null;
-                return false;
+                //error = "Product with the same name already exists";
+                //createdProductDto = null;
+                //return false;
+                throw new ArgumentException("Product with the same name already exists.", nameof(newProductDto));
             }
             //if the product doesn't exist, create new product in db
             var newProduct = _mapper.Map<Product>(newProductDto);
             _unitOfWork.Products.Add(newProduct);
             _unitOfWork.Save();
-            createdProductDto = _mapper.Map<ProductDto>(_unitOfWork.Products.GetById(newProduct.Id));
-            error = "";
-            return true;
+            //createdProductDto = _mapper.Map<ProductDto>(_unitOfWork.Products.GetById(newProduct.Id));
+            //error = "";
+            //return true;
+            return _mapper.Map<ProductDto>(_unitOfWork.Products.GetById(newProduct.Id));
         }
 
-        public bool DeleteProduct(int id, out string error)
+        public async Task<bool> DeleteProduct(int id)
         {
             //check if the product exists in db
             if (!_unitOfWork.Products.Find(p => p.Id == id).Any())
             {
-                error = "Product not found";
-                return false;
+                throw new ArgumentNullException("Product not found. "); //change to custom NotFoundException
             }
             //if the product exists, delete it from db
             _unitOfWork.Products.Delete(id);
             _unitOfWork.Save();
-            error = "";
             return true;
         }
 
-        public bool UpdateProduct(ProductDto productToUpdate, out string error)
+        public async Task<bool> UpdateProduct(ProductDto productToUpdate)
         {
-            //check if the product exists in db
-            if (!_unitOfWork.Products.Find(p => p.Id == productToUpdate.Id).Any())
-            {
-                error = "Product not found";
-                return false;
-            }
             //check if the product with the same name already exists in db
             if (_unitOfWork.Products.Find(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id).Any())
             {
-                error = "Product with the same name already exists";
-                return false;
+                throw new ArgumentException("Product with the same name already exists. ", nameof(productToUpdate));
             }
             //if the product exists, update it in db
             _unitOfWork.Products.Update(_mapper.Map<Product>(productToUpdate));
             _unitOfWork.Save();
-            error = "";
             return true;
         }
 
-        public bool AddUser(int productId, int userId, out string error)
+        public async Task<bool> AddUser(int productId, int userId)
         {
             var existingProduct = _unitOfWork.Products.GetById(productId);
             var existingUser = _unitOfWork.Users.GetById(userId);
 
             if (existingProduct == null || existingUser == null)
             {
-                error = "Product or User not found";
-                return false;
+                throw new ArgumentNullException("Product or User not found. "); //change to custom NotFoundException
             }
             else
             {
                 existingProduct.Users.Add(existingUser);
                 _unitOfWork.Products.Update(existingProduct);
                 _unitOfWork.Save();
-                error = "";
                 return true;
             }
         }

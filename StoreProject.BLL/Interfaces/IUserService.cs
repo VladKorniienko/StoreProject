@@ -4,10 +4,10 @@ namespace StoreProject.BLL.Interfaces
 {
     public interface IUserService
     {
-        public IEnumerable<UserDto> GetUsers();
-        public UserDto GetUser(int id);
-        public bool AddUser(UserLoginDto newUserDto, out UserDto createdUserDto, out string error);
-        public bool UpdateUser(UserDto userToUpdate, out string error);
-        public bool DeleteUser(int id, out string error);
+        public Task<IEnumerable<UserDto>> GetUsers();
+        public Task<UserDto> GetUser(int id);
+        public Task<UserDto> AddUser(UserLoginDto newUserDto);
+        public Task<bool> UpdateUser(UserDto userToUpdate);
+        public Task<bool> DeleteUser(int id);
     }
 }

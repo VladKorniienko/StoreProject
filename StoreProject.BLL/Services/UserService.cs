@@ -23,68 +23,62 @@ namespace StoreProject.BLL.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<UserDto> GetUsers()
+        public async Task<IEnumerable<UserDto>> GetUsers()
         {
             var users = _unitOfWork.Users.GetAllWithProducts();
             var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
             return usersDto;
         }
-        public UserDto GetUser(int id)
+        public async Task<UserDto> GetUser(int id)
         {
             var user = _unitOfWork.Users.GetById(id);
+            if (user == null)
+            {
+                throw new ArgumentNullException("User not found."); //change to custom NotFoundException
+            }
             var userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
 
-        public bool AddUser(UserLoginDto newUserDto, out UserDto createdUserDto, out string error)
+        public async Task<UserDto> AddUser(UserLoginDto newUserDto)
         {
             //check wheter the user with the same email already exists in db
             if (_unitOfWork.Users.Find(u => u.Email == newUserDto.Email).Any())
             {
-                error = "User with the same email already exists";
-                createdUserDto = null;
-                return false;
+                throw new ArgumentException("User with the same email already exists.", nameof(newUserDto));
             }
             //if the user doesn't exist, create new user in db
             var newUser = _mapper.Map<User>(newUserDto);
             _unitOfWork.Users.Add(newUser);
             _unitOfWork.Save();
-            createdUserDto = _mapper.Map<UserDto>(_unitOfWork.Users.GetById(newUser.Id));
-            error = "";
-            return true;
+            return _mapper.Map<UserDto>(_unitOfWork.Users.GetById(newUser.Id));
         }
 
-        public bool UpdateUser(UserDto userToUpdate, out string error)
+        public async Task<bool> UpdateUser(UserDto userToUpdate)
         {
-
             if (!_unitOfWork.Users.Find(u => u.Id == userToUpdate.Id).Any())
             {
-                error = "User not found";
-                return false;
+                throw new ArgumentNullException("User not found."); //change to custom NotFoundException
             }
             if (_unitOfWork.Users.Find(u => u.Email == userToUpdate.Email && u.Id != userToUpdate.Id).Any())
             {
-                error = "User with the same email already exists";
-                return false;
+                throw new ArgumentException("User with the same email already exists.", nameof(userToUpdate));
             }
             _unitOfWork.Users.Update(_mapper.Map<User>(userToUpdate));
             _unitOfWork.Save();
-            error = "";
             return true;
         }
 
-        public bool DeleteUser(int id, out string error)
+        public async Task<bool> DeleteUser(int id)
         {
             var user = _unitOfWork.Users.GetById(id);
-            if (user != null)
+            if (user == null)
             {
-                _unitOfWork.Users.Delete(user);
-                _unitOfWork.Save();
-                error = "";
-                return true;
+                throw new ArgumentNullException("User not found."); //change to custom NotFoundException
             }
-            error = "User not found";
-            return false;
+            _unitOfWork.Users.Delete(user);
+            _unitOfWork.Save();
+            return true;
         }
     }
 }
