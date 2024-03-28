@@ -26,7 +26,7 @@ namespace StoreProject.BLL.Services
 
         public async Task<ProductDto> GetProduct(int id)
         {
-            var product = _unitOfWork.Products.GetById(id);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
             var productDto = _mapper.Map<ProductDto>(product);
             return productDto;
         }
@@ -35,7 +35,8 @@ namespace StoreProject.BLL.Services
         public async Task<ProductDto> AddProduct(ProductDto newProductDto)
         {
             //check wheter the product with the same name already exists in db
-            if (_unitOfWork.Products.Find(p => p.Name == newProductDto.Name).Any())
+            var product = await _unitOfWork.Products.FindAsync(p => p.Name == newProductDto.Name);
+            if (product.Any())
             {
                 //error = "Product with the same name already exists";
                 //createdProductDto = null;
@@ -44,44 +45,46 @@ namespace StoreProject.BLL.Services
             }
             //if the product doesn't exist, create new product in db
             var newProduct = _mapper.Map<Product>(newProductDto);
-            _unitOfWork.Products.Add(newProduct);
-            _unitOfWork.Save();
+            await _unitOfWork.Products.AddAsync(newProduct);
+            await _unitOfWork.SaveAsync();
             //createdProductDto = _mapper.Map<ProductDto>(_unitOfWork.Products.GetById(newProduct.Id));
             //error = "";
             //return true;
-            return _mapper.Map<ProductDto>(_unitOfWork.Products.GetById(newProduct.Id));
+            return _mapper.Map<ProductDto>(await _unitOfWork.Products.GetByIdAsync(newProduct.Id));
         }
 
         public async Task<bool> DeleteProduct(int id)
         {
             //check if the product exists in db
-            if (!_unitOfWork.Products.Find(p => p.Id == id).Any())
+            var product = await _unitOfWork.Products.FindAsync(p => p.Id == id);
+            if (!product.Any())
             {
                 throw new ArgumentNullException("Product not found. "); //change to custom NotFoundException
             }
             //if the product exists, delete it from db
-            _unitOfWork.Products.Delete(id);
-            _unitOfWork.Save();
+            await _unitOfWork.Products.DeleteAsync(id);
+            await _unitOfWork.SaveAsync();
             return true;
         }
 
         public async Task<bool> UpdateProduct(ProductDto productToUpdate)
         {
             //check if the product with the same name already exists in db
-            if (_unitOfWork.Products.Find(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id).Any())
+            var product = await _unitOfWork.Products.FindAsync(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id);
+            if (product.Any())
             {
                 throw new ArgumentException("Product with the same name already exists. ", nameof(productToUpdate));
             }
             //if the product exists, update it in db
-            _unitOfWork.Products.Update(_mapper.Map<Product>(productToUpdate));
-            _unitOfWork.Save();
+            await _unitOfWork.Products.UpdateAsync(_mapper.Map<Product>(productToUpdate));
+            await _unitOfWork.SaveAsync();
             return true;
         }
 
         public async Task<bool> AddUser(int productId, int userId)
         {
-            var existingProduct = _unitOfWork.Products.GetById(productId);
-            var existingUser = _unitOfWork.Users.GetById(userId);
+            var existingProduct = await _unitOfWork.Products.GetByIdAsync(productId);
+            var existingUser = await _unitOfWork.Users.GetByIdAsync(userId);
 
             if (existingProduct == null || existingUser == null)
             {
@@ -90,8 +93,8 @@ namespace StoreProject.BLL.Services
             else
             {
                 existingProduct.Users.Add(existingUser);
-                _unitOfWork.Products.Update(existingProduct);
-                _unitOfWork.Save();
+                await _unitOfWork.Products.UpdateAsync(existingProduct);
+                await _unitOfWork.SaveAsync();
                 return true;
             }
         }

@@ -53,7 +53,7 @@ namespace StoreProject.Controllers
             catch (Exception ex)
             {
                 //logging
-                return StatusCode(500, "An unexpected error occurred while adding the product.");
+                return NotFound(ex.Message);
             }
         }
 

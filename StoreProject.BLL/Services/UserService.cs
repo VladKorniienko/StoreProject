@@ -31,7 +31,7 @@ namespace StoreProject.BLL.Services
         }
         public async Task<UserDto> GetUser(int id)
         {
-            var user = _unitOfWork.Users.GetById(id);
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
             {
                 throw new ArgumentNullException("User not found."); //change to custom NotFoundException
@@ -43,41 +43,44 @@ namespace StoreProject.BLL.Services
         public async Task<UserDto> AddUser(UserLoginDto newUserDto)
         {
             //check wheter the user with the same email already exists in db
-            if (_unitOfWork.Users.Find(u => u.Email == newUserDto.Email).Any())
+            var existingUser = await _unitOfWork.Users.FindAsync(u => u.Email == newUserDto.Email);
+            if (existingUser.Any())
             {
                 throw new ArgumentException("User with the same email already exists.", nameof(newUserDto));
             }
             //if the user doesn't exist, create new user in db
             var newUser = _mapper.Map<User>(newUserDto);
-            _unitOfWork.Users.Add(newUser);
-            _unitOfWork.Save();
-            return _mapper.Map<UserDto>(_unitOfWork.Users.GetById(newUser.Id));
+            await _unitOfWork.Users.AddAsync(newUser);
+            await _unitOfWork.SaveAsync();
+            return _mapper.Map<UserDto>(newUser);
         }
 
         public async Task<bool> UpdateUser(UserDto userToUpdate)
         {
-            if (!_unitOfWork.Users.Find(u => u.Id == userToUpdate.Id).Any())
+            var existingUser = await _unitOfWork.Users.FindAsync(u => u.Id == userToUpdate.Id);
+            if (!existingUser.Any())
             {
                 throw new ArgumentNullException("User not found."); //change to custom NotFoundException
             }
-            if (_unitOfWork.Users.Find(u => u.Email == userToUpdate.Email && u.Id != userToUpdate.Id).Any())
+            var userWithSameEmail = await _unitOfWork.Users.FindAsync(u => u.Email == userToUpdate.Email && u.Id != userToUpdate.Id);
+            if (userWithSameEmail.Any())
             {
                 throw new ArgumentException("User with the same email already exists.", nameof(userToUpdate));
             }
-            _unitOfWork.Users.Update(_mapper.Map<User>(userToUpdate));
-            _unitOfWork.Save();
+            await _unitOfWork.Users.UpdateAsync(_mapper.Map<User>(userToUpdate));
+            await _unitOfWork.SaveAsync();
             return true;
         }
 
         public async Task<bool> DeleteUser(int id)
         {
-            var user = _unitOfWork.Users.GetById(id);
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
             {
                 throw new ArgumentNullException("User not found."); //change to custom NotFoundException
             }
-            _unitOfWork.Users.Delete(user);
-            _unitOfWork.Save();
+            await _unitOfWork.Users.DeleteAsync(user);
+            await _unitOfWork.SaveAsync();
             return true;
         }
     }

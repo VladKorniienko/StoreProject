@@ -10,6 +10,6 @@ namespace StoreProject.DAL.Interfaces
     {
         IProductRepository Products { get; }
         IUserRepository Users { get; }
-        void Save();
+        Task SaveAsync();
     }
 }

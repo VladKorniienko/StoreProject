@@ -24,9 +24,9 @@ namespace StoreProject.DAL.UnitOfWork
         public IProductRepository Products { get; private set; }
         public IUserRepository Users { get; private set; }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
         protected virtual void Dispose(bool disposing)
