@@ -62,5 +62,12 @@ namespace StoreProject.Controllers
             return NoContent();
 
         }
+        // PUT: api/Users/userId/Products/productId
+        [HttpPut("{userId}/productId")]
+        public async Task<IActionResult> BuyProduct(int userId, int productId)
+        {
+            await _userService.BuyProduct(userId, productId);
+            return NoContent();
+        }
     }
 }

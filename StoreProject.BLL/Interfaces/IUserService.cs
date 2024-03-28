@@ -7,7 +7,8 @@ namespace StoreProject.BLL.Interfaces
         public Task<IEnumerable<UserDto>> GetUsers();
         public Task<UserDto> GetUser(int id);
         public Task<UserDto> AddUser(UserLoginDto newUserDto);
-        public Task<bool> UpdateUser(UserDto userToUpdate);
+        public Task UpdateUser(UserDto userToUpdate);
         public Task<bool> DeleteUser(int id);
+        public Task BuyProduct(int userId, int productId);
     }
 }

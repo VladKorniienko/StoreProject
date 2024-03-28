@@ -48,6 +48,9 @@ namespace StoreProject.ExceptionHandler
                 case NotFoundException:
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
                     break;
+                case InvalidOperationException:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    break;
                 default:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     break;
