@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\StoreProject.Common.csproj" />
     <ProjectReference Include="..\StoreProject.DAL\StoreProject.DAL.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using StoreProject.Common.Exceptions;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
@@ -34,7 +35,7 @@ namespace StoreProject.BLL.Services
             var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
             {
-                throw new ArgumentNullException("User not found."); //change to custom NotFoundException
+                throw new NotFoundException($"User with ID {id} not found.");
             }
             var userDto = _mapper.Map<UserDto>(user);
             return userDto;
@@ -46,7 +47,7 @@ namespace StoreProject.BLL.Services
             var existingUser = await _unitOfWork.Users.FindAsync(u => u.Email == newUserDto.Email);
             if (existingUser.Any())
             {
-                throw new ArgumentException("User with the same email already exists.", nameof(newUserDto));
+                throw new ArgumentException($"User with the same email ({newUserDto.Email}) already exists.", nameof(newUserDto));
             }
             //if the user doesn't exist, create new user in db
             var newUser = _mapper.Map<User>(newUserDto);
@@ -60,12 +61,12 @@ namespace StoreProject.BLL.Services
             var existingUser = await _unitOfWork.Users.FindAsync(u => u.Id == userToUpdate.Id);
             if (!existingUser.Any())
             {
-                throw new ArgumentNullException("User not found."); //change to custom NotFoundException
+                throw new NotFoundException($"User with ID {userToUpdate.Id} not found."); 
             }
             var userWithSameEmail = await _unitOfWork.Users.FindAsync(u => u.Email == userToUpdate.Email && u.Id != userToUpdate.Id);
             if (userWithSameEmail.Any())
             {
-                throw new ArgumentException("User with the same email already exists.", nameof(userToUpdate));
+                throw new ArgumentException($"User with the same email ({userToUpdate.Email}) already exists.", nameof(userToUpdate));
             }
             await _unitOfWork.Users.UpdateAsync(_mapper.Map<User>(userToUpdate));
             await _unitOfWork.SaveAsync();
@@ -77,7 +78,7 @@ namespace StoreProject.BLL.Services
             var user = await _unitOfWork.Users.GetByIdAsync(id);
             if (user == null)
             {
-                throw new ArgumentNullException("User not found."); //change to custom NotFoundException
+                throw new NotFoundException($"User with ID {id} not found."); 
             }
             await _unitOfWork.Users.DeleteAsync(user);
             await _unitOfWork.SaveAsync();

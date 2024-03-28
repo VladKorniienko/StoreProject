@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using StoreProject.Common.Exceptions;
 using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
@@ -38,19 +39,13 @@ namespace StoreProject.BLL.Services
             var product = await _unitOfWork.Products.FindAsync(p => p.Name == newProductDto.Name);
             if (product.Any())
             {
-                //error = "Product with the same name already exists";
-                //createdProductDto = null;
-                //return false;
-                throw new ArgumentException("Product with the same name already exists.", nameof(newProductDto));
+                throw new ArgumentException($"Product with the same name ({newProductDto.Name}) already exists.", nameof(newProductDto));
             }
             //if the product doesn't exist, create new product in db
             var newProduct = _mapper.Map<Product>(newProductDto);
             await _unitOfWork.Products.AddAsync(newProduct);
             await _unitOfWork.SaveAsync();
-            //createdProductDto = _mapper.Map<ProductDto>(_unitOfWork.Products.GetById(newProduct.Id));
-            //error = "";
-            //return true;
-            return _mapper.Map<ProductDto>(await _unitOfWork.Products.GetByIdAsync(newProduct.Id));
+            return _mapper.Map<ProductDto>(newProduct);
         }
 
         public async Task<bool> DeleteProduct(int id)
@@ -59,7 +54,7 @@ namespace StoreProject.BLL.Services
             var product = await _unitOfWork.Products.FindAsync(p => p.Id == id);
             if (!product.Any())
             {
-                throw new ArgumentNullException("Product not found. "); //change to custom NotFoundException
+                throw new NotFoundException($"Product with ID {id} not found.");
             }
             //if the product exists, delete it from db
             await _unitOfWork.Products.DeleteAsync(id);
@@ -73,7 +68,7 @@ namespace StoreProject.BLL.Services
             var product = await _unitOfWork.Products.FindAsync(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id);
             if (product.Any())
             {
-                throw new ArgumentException("Product with the same name already exists. ", nameof(productToUpdate));
+                throw new ArgumentException($"Product with the same name ({productToUpdate.Name}) already exists.", nameof(productToUpdate));
             }
             //if the product exists, update it in db
             await _unitOfWork.Products.UpdateAsync(_mapper.Map<Product>(productToUpdate));
@@ -86,9 +81,13 @@ namespace StoreProject.BLL.Services
             var existingProduct = await _unitOfWork.Products.GetByIdAsync(productId);
             var existingUser = await _unitOfWork.Users.GetByIdAsync(userId);
 
-            if (existingProduct == null || existingUser == null)
+            if (existingProduct == null) 
             {
-                throw new ArgumentNullException("Product or User not found. "); //change to custom NotFoundException
+                throw new NotFoundException($"Product with ID {productId} not found.");
+            } 
+            if (existingUser == null)
+            {
+                throw new NotFoundException($"User with ID {userId} not found."); 
             }
             else
             {

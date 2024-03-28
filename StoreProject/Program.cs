@@ -5,6 +5,7 @@ using StoreProject.DAL.Context;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Repositories;
 using StoreProject.DAL.UnitOfWork;
+using StoreProject.ExceptionHandler;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x
             .AllowAnyOrigin()
             .AllowAnyMethod()
