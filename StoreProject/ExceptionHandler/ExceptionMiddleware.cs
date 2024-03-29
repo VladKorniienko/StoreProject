@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using StoreProject.Common.Exceptions;
-using System.Net;
+﻿using StoreProject.Common.Exceptions;
 using System.Text.Json;
 
 namespace StoreProject.ExceptionHandler

@@ -6,6 +6,7 @@ using StoreProject.ExceptionHandler;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//so-called "composition root"
 builder.Services.ConfigureDAL(builder.Configuration);
 builder.Services.ConfigureBLL();
 builder.Services.AddControllers();

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StoreProject.Common.Exceptions
+﻿namespace StoreProject.Common.Exceptions
 {
     public class NotFoundException : Exception
     {

@@ -5,7 +5,6 @@ using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
 using FluentValidation;
-using StoreProject.BLL.Validators;
 
 namespace StoreProject.BLL.Services
 {

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
-using StoreProject.BLL.Services;
-using StoreProject.DAL.Models;
 
 namespace StoreProject.Controllers
 {

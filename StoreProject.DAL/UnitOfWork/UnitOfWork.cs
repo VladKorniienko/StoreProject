@@ -1,11 +1,6 @@
 ﻿using StoreProject.DAL.Context;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StoreProject.DAL.UnitOfWork
 {

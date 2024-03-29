@@ -1,5 +1,4 @@
 ﻿using StoreProject.BLL.Dtos.Product;
-using StoreProject.DAL.Models;
 
 namespace StoreProject.BLL.Dtos.User
 {

@@ -4,11 +4,6 @@ using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentValidation;
 
 namespace StoreProject.BLL.Services
