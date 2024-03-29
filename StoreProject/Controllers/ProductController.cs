@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
-using StoreProject.BLL.Services;
-using StoreProject.DAL.Interfaces;
-using StoreProject.DAL.UnitOfWork;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

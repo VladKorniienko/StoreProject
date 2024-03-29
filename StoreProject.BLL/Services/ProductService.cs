@@ -4,6 +4,8 @@ using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
+using FluentValidation;
+using StoreProject.BLL.Validators;
 
 namespace StoreProject.BLL.Services
 {
@@ -11,11 +13,13 @@ namespace StoreProject.BLL.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<Product> _productValidator;
 
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<Product> productValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _productValidator = productValidator;
         }
 
         public async Task <IEnumerable<ProductDto>> GetProducts()
@@ -43,6 +47,12 @@ namespace StoreProject.BLL.Services
             }
             //if the product doesn't exist, create new product in db
             var newProduct = _mapper.Map<Product>(newProductDto);
+            var validationResultForProduct = await _productValidator.ValidateAsync(newProduct);
+            if (!validationResultForProduct.IsValid)
+            {
+                var errorMessage = string.Join(Environment.NewLine, validationResultForProduct.Errors);
+                throw new ArgumentException(errorMessage);
+            }
             await _unitOfWork.Products.AddAsync(newProduct);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<ProductDto>(newProduct);
@@ -64,14 +74,26 @@ namespace StoreProject.BLL.Services
 
         public async Task<bool> UpdateProduct(ProductDto productToUpdate)
         {
+            var existingProduct = await _unitOfWork.Products.GetByIdAsync(productToUpdate.Id);
+            if (existingProduct == null)
+            {
+                throw new NotFoundException($"Product with ID {productToUpdate.Id} not found.");
+            }
             //check if the product with the same name already exists in db
-            var product = await _unitOfWork.Products.FindAsync(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id);
-            if (product.Any())
+            var productWithNameDuplicate = await _unitOfWork.Products.FindAsync(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id);
+            if (productWithNameDuplicate.Any())
             {
                 throw new ArgumentException($"Product with the same name ({productToUpdate.Name}) already exists.", nameof(productToUpdate));
             }
             //if the product exists, update it in db
-            await _unitOfWork.Products.UpdateAsync(_mapper.Map<Product>(productToUpdate));
+            _mapper.Map(productToUpdate, existingProduct);
+            var validationResultForProduct = await _productValidator.ValidateAsync(existingProduct);
+            if (!validationResultForProduct.IsValid)
+            {
+                var errorMessage = string.Join(Environment.NewLine, validationResultForProduct.Errors);
+                throw new ArgumentException(errorMessage);
+            }
+            await _unitOfWork.Products.UpdateAsync(existingProduct);
             await _unitOfWork.SaveAsync();
             return true;
         }

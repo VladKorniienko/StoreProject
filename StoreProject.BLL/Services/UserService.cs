@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
 
 namespace StoreProject.BLL.Services
 {
@@ -17,11 +18,13 @@ namespace StoreProject.BLL.Services
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<User> _userValidator;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<User> userValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userValidator = userValidator;
         }
 
         public async Task<IEnumerable<UserDto>> GetUsers()
@@ -51,6 +54,12 @@ namespace StoreProject.BLL.Services
             }
             //if the user doesn't exist, create new user in db
             var newUser = _mapper.Map<User>(newUserDto);
+            var validationResultForUser = await _userValidator.ValidateAsync(newUser);
+            if (!validationResultForUser.IsValid) 
+            {
+                var errorMessage = string.Join(Environment.NewLine, validationResultForUser.Errors);
+                throw new ArgumentException(errorMessage);
+            }
             await _unitOfWork.Users.AddAsync(newUser);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<UserDto>(newUser);
@@ -70,6 +79,12 @@ namespace StoreProject.BLL.Services
                 throw new ArgumentException($"User with the same email ({userToUpdate.Email}) already exists.", nameof(userToUpdate));
             }
             _mapper.Map(userToUpdate, existingUser);
+            var validationResultForUser = await _userValidator.ValidateAsync(existingUser);
+            if (!validationResultForUser.IsValid)
+            {
+                var errorMessage = string.Join(Environment.NewLine, validationResultForUser.Errors);
+                throw new ArgumentException(errorMessage);
+            }
             await _unitOfWork.Users.UpdateAsync(existingUser);
             await _unitOfWork.SaveAsync();
         }
