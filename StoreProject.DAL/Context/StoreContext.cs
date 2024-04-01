@@ -16,6 +16,8 @@ namespace StoreProject.DAL.Context
             base.OnModelCreating(modelBuilder);
 
             //Product config
+            modelBuilder.Entity<Product>().HasKey(p => p.Id);
+            modelBuilder.Entity<Product>().Property(p=>p.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Product>()
                 .Property(p => p.PriceUSD)
                 .HasColumnType("decimal(18,2)");

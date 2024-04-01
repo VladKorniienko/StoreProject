@@ -35,7 +35,7 @@ namespace StoreProject.BLL.Services
             return productDto;
         }
 
-        public async Task<ProductDto> AddProduct(ProductDto newProductDto)
+        public async Task<ProductDto> AddProduct(ProductCreateDto newProductDto)
         {
             //check wheter the product with the same name already exists in db
             var product = await _unitOfWork.Products.FindAsync(p => p.Name == newProductDto.Name);

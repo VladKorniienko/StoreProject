@@ -27,7 +27,7 @@ namespace StoreProject.Controllers
 
         // POST api/<ProductController>
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> PostProduct(ProductDto newProduct)
+        public async Task<ActionResult<ProductDto>> PostProduct(ProductCreateDto newProduct)
         {
             var createdProductDto = await _productService.AddProduct(newProduct);
             return Created("", createdProductDto);
