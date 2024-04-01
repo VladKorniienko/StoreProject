@@ -35,13 +35,9 @@ namespace StoreProject.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductDto>> PutProduct(string id, ProductDto product)
+        public async Task<ActionResult<ProductDto>> PutProduct(string id, ProductUpdateDto product)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-            await _productService.UpdateProduct(product);
+            await _productService.UpdateProduct(product, id);
             return NoContent();
         }
         // DELETE api/<ProductController>/5

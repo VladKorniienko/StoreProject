@@ -11,6 +11,7 @@ namespace StoreProject.BLL.AutoMapperProfiles
         {
             CreateMap<User, UserRegisterDto>().ReverseMap();
             CreateMap<User, UserLoginDto>().ReverseMap();
+            CreateMap <User,UserUpdateDto>().ReverseMap();
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<UserDto, User>()

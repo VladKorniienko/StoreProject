@@ -62,18 +62,18 @@ namespace StoreProject.BLL.Services
             return _mapper.Map<UserDto>(newUser);
         }
 
-        public async Task UpdateUser(UserDto userToUpdate)
+        public async Task UpdateUser(UserUpdateDto userToUpdate, string id)
         {
-            var existingUser = await _userManager.FindByIdAsync(userToUpdate.Id);
+            var existingUser = await _userManager.FindByIdAsync(id);
             if (existingUser == null)
             {
-                throw new NotFoundException($"User with ID {userToUpdate.Id} not found.");
+                throw new NotFoundException($"User with ID {id} not found.");
             }
 
             var userWithSameEmail = await _userManager.FindByEmailAsync(userToUpdate.Email!);
-            if (userWithSameEmail != null && userWithSameEmail.Id != userToUpdate.Id)
+            if (userWithSameEmail != null && userWithSameEmail.Id != id)
             {
-                throw new ArgumentException($"User with the same email ({userToUpdate.Email}) already exists.", nameof(userToUpdate));
+                throw new ArgumentException($"User with the same email ({userToUpdate.Email}) already exists.");
             }
             _mapper.Map(userToUpdate, existingUser);
 

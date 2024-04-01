@@ -70,15 +70,15 @@ namespace StoreProject.BLL.Services
             return true;
         }
 
-        public async Task<bool> UpdateProduct(ProductDto productToUpdate)
+        public async Task<bool> UpdateProduct(ProductUpdateDto productToUpdate, string id)
         {
-            var existingProduct = await _unitOfWork.Products.GetByIdAsync(productToUpdate.Id);
+            var existingProduct = await _unitOfWork.Products.GetByIdAsync(id);
             if (existingProduct == null)
             {
-                throw new NotFoundException($"Product with ID {productToUpdate.Id} not found.");
+                throw new NotFoundException($"Product with ID {id} not found.");
             }
             //check if the product with the same name already exists in db
-            var productWithNameDuplicate = await _unitOfWork.Products.FindAsync(p => p.Name == productToUpdate.Name && p.Id != productToUpdate.Id);
+            var productWithNameDuplicate = await _unitOfWork.Products.FindAsync(p => p.Name == productToUpdate.Name && p.Id != id );
             if (productWithNameDuplicate.Any())
             {
                 throw new ArgumentException($"Product with the same name ({productToUpdate.Name}) already exists.");

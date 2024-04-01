@@ -40,13 +40,9 @@ namespace StoreProject.Controllers
 
         //PUT:
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserDto>> PutUser(string id, UserDto user)
+        public async Task<ActionResult<UserDto>> PutUser(string id, UserUpdateDto user)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-            await _userService.UpdateUser(user);
+            await _userService.UpdateUser(user, id);
             return NoContent();
 
         }
