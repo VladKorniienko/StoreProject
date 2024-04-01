@@ -3,6 +3,6 @@ namespace StoreProject.DAL.Interfaces
 {
     public interface IProductRepository : IRepositoryBase<Product>
     {
-        IEnumerable<Product> GetAllWithUsers();
+        public Task<IEnumerable<Product>> GetAllWithUsers();
     }
 }

@@ -16,7 +16,7 @@ namespace StoreProject.DAL.Repositories
             return await _dbContext.Users.Include(u => u.Products).ToListAsync();
         }
 
-        public async Task<User> GetByIdWithProducts(int id)
+        public async Task<User> GetByIdWithProducts(string id)
         {
             return await _dbContext.Users.Where(u => u.Id == id).Include(u => u.Products).FirstOrDefaultAsync();
         }

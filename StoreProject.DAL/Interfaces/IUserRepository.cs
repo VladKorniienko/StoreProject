@@ -5,6 +5,6 @@ namespace StoreProject.DAL.Interfaces
     public interface IUserRepository : IRepositoryBase<User>
     {
         public Task<IEnumerable<User>> GetAllWithProducts();
-        public Task<User> GetByIdWithProducts(int id);
+        public Task<User> GetByIdWithProducts(string id);
     }
 }

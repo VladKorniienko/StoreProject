@@ -35,7 +35,7 @@ namespace StoreProject.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductDto>> PutProduct(int id, ProductDto product)
+        public async Task<ActionResult<ProductDto>> PutProduct(string id, ProductDto product)
         {
             if (id != product.Id)
             {
@@ -46,14 +46,14 @@ namespace StoreProject.Controllers
         }
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct(string id)
         {
             await _productService.DeleteProduct(id);
             return NoContent();
         }
         // PUT: api/Products/productId/Users/userId
         [HttpPut("{productId}/userId")]
-        public async Task<IActionResult> AddUser(int productId, int userId)
+        public async Task<IActionResult> AddUser(string productId, string userId)
         {
             await _productService.AddUser(productId, userId);
             return NoContent();

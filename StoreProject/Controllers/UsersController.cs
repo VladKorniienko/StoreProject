@@ -24,7 +24,7 @@ namespace StoreProject.Controllers
 
         [HttpGet("{id}")]
 
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUser(int id)
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUser(string id)
         {
             var user = await _userService.GetUser(id);
             return Ok(user);
@@ -32,7 +32,7 @@ namespace StoreProject.Controllers
 
         // POST:
         [HttpPost]
-        public async Task<ActionResult<UserLoginDto>> PostUser(UserLoginDto newUser)
+        public async Task<ActionResult<UserRegisterDto>> PostUser(UserRegisterDto newUser)
         {
             var createdUserDto = await _userService.AddUser(newUser);
             return Created("", createdUserDto);
@@ -40,7 +40,7 @@ namespace StoreProject.Controllers
 
         //PUT:
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserDto>> PutUser(int id, UserDto user)
+        public async Task<ActionResult<UserDto>> PutUser(string id, UserDto user)
         {
             if (id != user.Id)
             {
@@ -53,7 +53,7 @@ namespace StoreProject.Controllers
 
         //DELETE:
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
 
             await _userService.DeleteUser(id);
@@ -62,7 +62,7 @@ namespace StoreProject.Controllers
         }
         // PUT: api/Users/userId/Products/productId
         [HttpPut("{userId}/productId")]
-        public async Task<IActionResult> BuyProduct(int userId, int productId)
+        public async Task<IActionResult> BuyProduct(string userId, string productId)
         {
             await _userService.BuyProduct(userId, productId);
             return NoContent();

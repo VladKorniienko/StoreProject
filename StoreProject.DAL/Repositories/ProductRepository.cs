@@ -10,9 +10,9 @@ namespace StoreProject.DAL.Repositories
         public ProductRepository(StoreContext dbContext) : base(dbContext)
         {
         }
-        public IEnumerable<Product> GetAllWithUsers()
+        public async Task<IEnumerable<Product>> GetAllWithUsers()
         {
-            return _dbContext.Products.Include(p => p.Users).ToList();
+            return await _dbContext.Products.Include(p => p.Users).ToListAsync();
         }
     }
 }

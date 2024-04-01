@@ -23,7 +23,7 @@ namespace StoreProject.DAL.Repositories
             _dbContext.Set<T>().Remove(entity);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string id)
         {
             var entityToDelete = await _dbContext.Set<T>().FindAsync(id);
             if (entityToDelete != null)
@@ -42,7 +42,7 @@ namespace StoreProject.DAL.Repositories
             return await _dbContext.Set<T>().ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(string id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }
