@@ -11,18 +11,51 @@ namespace StoreProject.DAL.Context
         {
         }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<Category> Categories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             //Product config
-            modelBuilder.Entity<Product>().HasKey(p => p.Id);
-            modelBuilder.Entity<Product>().Property(p=>p.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Product>()
+                .HasKey(p => p.Id);
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
             modelBuilder.Entity<Product>()
                 .Property(p => p.PriceUSD)
                 .HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.Name)
+                .IsUnique();
+
+            //Genre config
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Genre)
+                .WithMany()
+                .HasForeignKey(p => p.GenreId);
+            modelBuilder.Entity<Genre>()
+                .HasKey(g => g.Id);
+            modelBuilder.Entity<Genre>()
+                .Property(g => g.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Genre>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
+            //Category config
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId);
+            modelBuilder.Entity<Category>()
+                .HasKey(c => c.Id);
+            modelBuilder.Entity<Category>()
+                .Property(c => c.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => c.Name)
                 .IsUnique();
 
             //User config
@@ -35,7 +68,7 @@ namespace StoreProject.DAL.Context
             modelBuilder.Entity<User>()
                 .Property(u => u.Email)
                 .IsRequired();
-            
+
         }
     }
 }
