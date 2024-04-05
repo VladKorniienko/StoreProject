@@ -14,10 +14,15 @@ namespace StoreProject.DAL.UnitOfWork
             _dbContext = dbContext;
             Products = new ProductRepository(_dbContext);
             Users = new UserRepository(_dbContext);
+            Genres = new GenreRepository(_dbContext);
+            Categories = new CategoryRepository(_dbContext);
         }
 
         public IProductRepository Products { get; private set; }
         public IUserRepository Users { get; private set; }
+        public IGenreRepository Genres { get; private set; }
+        public ICategoryRepository Categories { get; private set; }
+
 
         public async Task SaveAsync()
         {

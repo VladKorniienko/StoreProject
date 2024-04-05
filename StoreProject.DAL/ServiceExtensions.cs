@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StoreProject.DAL.Context;
 using StoreProject.DAL.Interfaces;
-using StoreProject.DAL.Models;
 using StoreProject.DAL.Repositories;
 namespace StoreProject.DAL
 {
@@ -15,6 +13,8 @@ namespace StoreProject.DAL
             services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IUnitOfWork, StoreProject.DAL.UnitOfWork.UnitOfWork>();
 
             services.AddDbContext<StoreContext>(options =>

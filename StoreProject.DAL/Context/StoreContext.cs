@@ -33,7 +33,7 @@ namespace StoreProject.DAL.Context
             //Genre config
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Genre)
-                .WithMany()
+                .WithMany(g => g.Products)
                 .HasForeignKey(p => p.GenreId);
             modelBuilder.Entity<Genre>()
                 .HasKey(g => g.Id);
@@ -47,7 +47,7 @@ namespace StoreProject.DAL.Context
             //Category config
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
-                .WithMany()
+                .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId);
             modelBuilder.Entity<Category>()
                 .HasKey(c => c.Id);

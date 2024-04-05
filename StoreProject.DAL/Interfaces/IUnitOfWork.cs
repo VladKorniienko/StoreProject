@@ -4,6 +4,8 @@
     {
         IProductRepository Products { get; }
         IUserRepository Users { get; }
+        IGenreRepository Genres { get; }
+        ICategoryRepository Categories { get; }
         Task SaveAsync();
     }
 }
