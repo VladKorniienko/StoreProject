@@ -1,4 +1,5 @@
 ﻿using StoreProject.Common.Exceptions;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Text.Json;
 
 namespace StoreProject.ExceptionHandler
@@ -27,7 +28,7 @@ namespace StoreProject.ExceptionHandler
         {
             // Customize the response based on the exception
             context.Response.ContentType = "application/json";
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
             var response = new
             {
                 error = exception.Message
