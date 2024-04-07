@@ -24,7 +24,7 @@ namespace StoreProject.Controllers
 
         [HttpGet("{id}")]
 
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUser(string id)
+        public async Task<ActionResult<UserDto>> GetUser(string id)
         {
             var user = await _userService.GetUser(id);
             return Ok(user);
