@@ -32,14 +32,14 @@ namespace StoreProject.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<GenrePartialDto>> PostGenre(GenreCreateDto newGenre)
+        public async Task<ActionResult<GenrePartialDto>> PostGenre(GenreCreateOrUpdateDto newGenre)
         {
             var createdGenreDto = await _genreService.AddGenre(newGenre);
             return Created("", createdGenreDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<GenrePartialDto>> PutGenre(GenreCreateDto genre, string id)
+        public async Task<ActionResult<GenrePartialDto>> PutGenre(GenreCreateOrUpdateDto genre, string id)
         {
             await _genreService.UpdateGenre(genre, id);
             return NoContent();

@@ -47,13 +47,5 @@ namespace StoreProject.Controllers
             await _productService.DeleteProduct(id);
             return NoContent();
         }
-        // PUT: api/Products/productId/Users/userId
-        [HttpPut("{productId}/userId")]
-        public async Task<IActionResult> AddUser(string productId, string userId)
-        {
-            await _productService.AddUser(productId, userId);
-            return NoContent();
-
-        }
     }
 }

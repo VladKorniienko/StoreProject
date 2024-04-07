@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StoreProject.BLL.Dtos.Genre
 {
-    public class GenreCreateDto
+    public class GenreCreateOrUpdateDto
     {
         public string Name { get; set; }
     }

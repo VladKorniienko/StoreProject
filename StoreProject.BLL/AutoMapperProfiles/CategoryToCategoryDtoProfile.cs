@@ -16,7 +16,7 @@ namespace StoreProject.BLL.AutoMapperProfiles
         public CategoryToCategoryDtoProfile()
         {
             CreateMap<Category, CategoryPartialDto>().ReverseMap();
-            CreateMap<Category, CategoryCreateDto>().ReverseMap();
+            CreateMap<Category, CategoryCreateOrUpdateDto>().ReverseMap();
             CreateMap<Category, CategoryDto>()
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<CategoryDto, Category>()

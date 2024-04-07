@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StoreProject.BLL.Dtos.Category
 {
-    public class CategoryCreateDto
+    public class CategoryCreateOrUpdateDto
     {
         public string Name { get; set; }
     }

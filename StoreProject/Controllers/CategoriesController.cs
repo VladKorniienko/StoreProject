@@ -29,14 +29,14 @@ namespace StoreProject.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryPartialDto>> PostCategory(CategoryCreateDto newCategory)
+        public async Task<ActionResult<CategoryPartialDto>> PostCategory(CategoryCreateOrUpdateDto newCategory)
         {
             var createdCategoryDto = await _categoryService.AddCategory(newCategory);
             return Created("", createdCategoryDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CategoryPartialDto>> PutCategory(CategoryCreateDto genre, string id)
+        public async Task<ActionResult<CategoryPartialDto>> PutCategory(CategoryCreateOrUpdateDto genre, string id)
         {
             await _categoryService.UpdateCategory(genre, id);
             return NoContent();

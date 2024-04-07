@@ -16,7 +16,7 @@ namespace StoreProject.BLL.AutoMapperProfiles
         public GenreToGenreDtoProfile()
         {
             CreateMap<Genre, GenrePartialDto>().ReverseMap();
-            CreateMap<Genre, GenreCreateDto>().ReverseMap();
+            CreateMap<Genre, GenreCreateOrUpdateDto>().ReverseMap();
             CreateMap<Genre, GenreDto>()
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<GenreDto, Genre>()
