@@ -8,7 +8,7 @@ namespace StoreProject.BLL.Interfaces
         public Task<ProductDto> GetProduct(string id);
         public Task<bool> AddUser(string productId, string userId);
         public Task<ProductDto> AddProduct(ProductCreateDto newProductDto);
-        public Task<bool> UpdateProduct(ProductUpdateDto productToUpdate, string id);
+        public Task<bool> UpdateProduct(ProductCreateDto productToUpdate, string id);
         public Task<bool> DeleteProduct(string id);
     }
 }

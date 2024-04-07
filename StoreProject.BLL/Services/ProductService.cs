@@ -5,6 +5,7 @@ using StoreProject.BLL.Interfaces;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace StoreProject.BLL.Services
 {
@@ -23,7 +24,7 @@ namespace StoreProject.BLL.Services
 
         public async Task <IEnumerable<ProductDto>> GetProducts()
         {
-            var products = await _unitOfWork.Products.GetAllWithUsers();
+            var products = await _unitOfWork.Products.GetAllDetailsWithUsers();
             var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
             return productsDto;
         }
@@ -43,8 +44,28 @@ namespace StoreProject.BLL.Services
             {
                 throw new ArgumentException($"Product with the same name ({newProductDto.Name}) already exists.");
             }
-            //if the product doesn't exist, create new product in db
+            // Find genre
+            var genre = await _unitOfWork.Genres.GetByIdAsync(newProductDto.GenreId);
+            if (genre == null)
+            {
+                // Genre does not exist
+                throw new ArgumentException($"Genre with the ID ({newProductDto.GenreId}) doesn't exist.");
+            }
+            // Find category
+            var category = await _unitOfWork.Categories.GetByIdAsync(newProductDto.CategoryId);
+            if (category == null)
+            {
+                // Category does not exist
+                throw new ArgumentException($"Category with the ID ({newProductDto.CategoryId}) doesn't exist.");
+            }
+
             var newProduct = _mapper.Map<Product>(newProductDto);
+
+            // Associate genre and category with the product
+            newProduct.Genre = genre;
+            newProduct.Category = category;
+
+            //if the product doesn't exist, create new product in db
             var validationResultForProduct = await _productValidator.ValidateAsync(newProduct);
             if (!validationResultForProduct.IsValid)
             {
@@ -59,8 +80,8 @@ namespace StoreProject.BLL.Services
         public async Task<bool> DeleteProduct(string id)
         {
             //check if the product exists in db
-            var product = await _unitOfWork.Products.FindAsync(p => p.Id == id);
-            if (!product.Any())
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product==null)
             {
                 throw new NotFoundException($"Product with ID {id} not found.");
             }
@@ -70,7 +91,7 @@ namespace StoreProject.BLL.Services
             return true;
         }
 
-        public async Task<bool> UpdateProduct(ProductUpdateDto productToUpdate, string id)
+        public async Task<bool> UpdateProduct(ProductCreateDto productToUpdate, string id)
         {
             var existingProduct = await _unitOfWork.Products.GetByIdAsync(id);
             if (existingProduct == null)
@@ -83,8 +104,27 @@ namespace StoreProject.BLL.Services
             {
                 throw new ArgumentException($"Product with the same name ({productToUpdate.Name}) already exists.");
             }
-            //if the product exists, update it in db
+            // Find genre
+            var genre = await _unitOfWork.Genres.GetByIdAsync(productToUpdate.GenreId);
+            if (genre == null)
+            {
+                // Genre does not exist
+                throw new ArgumentException($"Genre with the ID ({productToUpdate.GenreId}) doesn't exist.");
+            }
+            // Find category
+            var category = await _unitOfWork.Categories.GetByIdAsync(productToUpdate.CategoryId);
+            if (category == null)
+            {
+                // Category does not exist
+                throw new ArgumentException($"Category with the ID ({productToUpdate.CategoryId}) doesn't exist.");
+            }
+
             _mapper.Map(productToUpdate, existingProduct);
+            // Associate genre and category with the product
+            existingProduct.Genre = genre;
+            existingProduct.Category = category;
+            //if the product exists, update it in db
+            
             var validationResultForProduct = await _productValidator.ValidateAsync(existingProduct);
             if (!validationResultForProduct.IsValid)
             {
