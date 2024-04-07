@@ -15,6 +15,8 @@ namespace StoreProject.BLL
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IGenreService, GenreService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddScoped<UserManager<User>>();
