@@ -13,7 +13,7 @@ namespace StoreProject.BLL.Interfaces
         public Task<IEnumerable<GenrePartialDto>> GetGenres();
         public Task<GenreDto> GetGenre(string id);
         public Task<GenrePartialDto> AddGenre(GenreCreateDto newGenreDto);
-        public Task<bool> UpdateGenre(GenreCreateDto genreToUpdate, string id);
-        public Task<bool> DeleteGenre(string id);
+        public Task UpdateGenre(GenreCreateDto genreToUpdate, string id);
+        public Task DeleteGenre(string id);
     }
 }

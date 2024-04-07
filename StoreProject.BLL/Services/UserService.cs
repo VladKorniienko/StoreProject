@@ -33,11 +33,7 @@ namespace StoreProject.BLL.Services
         public async Task<UserDto> GetUser(string id)
         {
             //var user = await _unitOfWork.Users.GetByIdWithProducts(id);
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                throw new NotFoundException($"User with ID {id} not found.");
-            }
+            var user = await CheckIfUserExists(id);
             var userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
@@ -46,11 +42,7 @@ namespace StoreProject.BLL.Services
         {
             //check wheter the user with the same email already exists in db
             //var existingUser = await _unitOfWork.Users.FindAsync(u => u.Email == newUserDto.Email);
-            var existingUser = await _userManager.FindByEmailAsync(newUserDto.Email!);
-            if (existingUser != null)
-            {
-                throw new ArgumentException($"User with the same email ({newUserDto.Email}) already exists.", nameof(newUserDto));
-            }
+            await CheckIfDuplicateEmailExists(newUserDto.Email);
             //if the user doesn't exist, create new user in db
             var newUser = _mapper.Map<User>(newUserDto);
             var result = await _userManager.CreateAsync(newUser, newUserDto.Password!);
@@ -64,17 +56,8 @@ namespace StoreProject.BLL.Services
 
         public async Task UpdateUser(UserUpdateDto userToUpdate, string id)
         {
-            var existingUser = await _userManager.FindByIdAsync(id);
-            if (existingUser == null)
-            {
-                throw new NotFoundException($"User with ID {id} not found.");
-            }
-
-            var userWithSameEmail = await _userManager.FindByEmailAsync(userToUpdate.Email!);
-            if (userWithSameEmail != null && userWithSameEmail.Id != id)
-            {
-                throw new ArgumentException($"User with the same email ({userToUpdate.Email}) already exists.");
-            }
+            var existingUser = await CheckIfUserExists(id);
+            await CheckIfDuplicateEmailExists(userToUpdate.Email);
             _mapper.Map(userToUpdate, existingUser);
 
             var result = await _userManager.UpdateAsync(existingUser);
@@ -85,31 +68,22 @@ namespace StoreProject.BLL.Services
             }
         }
 
-        public async Task<bool> DeleteUser(string id)
+        public async Task DeleteUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                throw new NotFoundException($"User with ID {id} not found.");
-            }
+            var user = await CheckIfUserExists(id);
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
                 throw new ArgumentException(string.Join(" ", errors));
             }
-            return true;
         }
 
         public async Task BuyProduct(string userId, string productId)
         {
-            var existingProduct = await _unitOfWork.Products.GetByIdAsync(productId);
+            var existingProduct = await CheckIfProductExists(productId);
             var existingUser = await _userManager.Users.Where(u => u.Id == userId).Include(u => u.Products).FirstOrDefaultAsync();
 
-            if (existingProduct == null)
-            {
-                throw new NotFoundException($"Product with ID {productId} not found.");
-            }
             if (existingUser == null)
             {
                 throw new NotFoundException($"User with ID {userId} not found.");
@@ -147,11 +121,40 @@ namespace StoreProject.BLL.Services
             {
                 throw new NotFoundException($"User with email {userLoginDto.Email} not found.");
             }
-
-
-
-
-
         }*/
+        private async Task<Product> CheckIfProductExists(string id)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product == null)
+            {
+                throw new NotFoundException($"Product with the ID {id} doesn't exist.");
+            }
+            return product;
+        }
+        private async Task<User> CheckIfUserExists(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException($"User with the ID {id} doesn't exist.");
+            }
+            return user;
+        }
+        private async Task CheckIfDuplicateNameExists(string name, string id = null)
+        {
+            var productsWithSameName = await _unitOfWork.Products.FindAsync(p => p.Name == name && (id == null || p.Id != id));
+            if (productsWithSameName.Any())
+            {
+                throw new ArgumentException($"Product with the same name ({name}) already exists.");
+            }
+        }
+        private async Task CheckIfDuplicateEmailExists(string email)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                throw new ArgumentException($"User with the same email ({email}) already exists.");
+            }
+        }
     }
 }

@@ -1,15 +1,8 @@
 ﻿using AutoMapper;
 using StoreProject.BLL.Dtos.Category;
-using StoreProject.BLL.Dtos.Genre;
 using StoreProject.BLL.Interfaces;
-using StoreProject.Common.Exceptions;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StoreProject.BLL.Services
 {
@@ -38,49 +31,50 @@ namespace StoreProject.BLL.Services
 
         public async Task<CategoryPartialDto> AddCategory(CategoryCreateDto newCategoryDto)
         {
-            var category = await _unitOfWork.Categories.FindAsync(g => g.Name == newCategoryDto.Name);
-            if (category.Any())
-            {
-                throw new ArgumentException($"Category with the same name ({newCategoryDto.Name}) already exists.");
-            }
+            await CheckIfDuplicateNameExists(newCategoryDto.Name);
             //if the category doesn't exist, create new product in db
             var newCategory = _mapper.Map<Category>(newCategoryDto);
             await _unitOfWork.Categories.AddAsync(newCategory);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<CategoryPartialDto>(newCategory);
         }
-        public async Task<bool> UpdateCategory(CategoryCreateDto categoryToUpdate, string id)
+        public async Task UpdateCategory(CategoryCreateDto categoryToUpdate, string id)
         {
-            var existingCategory = await _unitOfWork.Categories.GetByIdAsync(id);
-            if (existingCategory == null)
-            {
-                throw new NotFoundException($"Category with ID {id} not found.");
-            }
+            var existingCategory = await CheckIfCategoryExists(id);
             //check if the category with the same name already exists in db
-            var categoryWithNameDuplicate = await _unitOfWork.Categories.FindAsync(p => p.Name == categoryToUpdate.Name && p.Id != id);
-            if (categoryWithNameDuplicate.Any())
-            {
-                throw new ArgumentException($"Category with the same name ({categoryToUpdate.Name}) already exists.");
-            }
+            await CheckIfDuplicateNameExists(categoryToUpdate.Name, id);
             //if the category exists, update it in db
             _mapper.Map(categoryToUpdate, existingCategory);
             await _unitOfWork.Categories.UpdateAsync(existingCategory);
             await _unitOfWork.SaveAsync();
-            return true;
         }
 
-        public async Task<bool> DeleteCategory(string id)
+        public async Task DeleteCategory(string id)
         {
             //check if the category exists in db
+            var category = await CheckIfCategoryExists(id);
+            //if the category exists, delete it from db
+            await _unitOfWork.Categories.DeleteAsync(category);
+            await _unitOfWork.SaveAsync();
+        }
+
+        private async Task<Category> CheckIfCategoryExists(string id)
+        {
             var category = await _unitOfWork.Categories.GetByIdAsync(id);
             if (category == null)
             {
-                throw new NotFoundException($"Category with ID {id} not found.");
+                // Category does not exist
+                throw new ArgumentException($"Category with the ID ({id}) doesn't exist.");
             }
-            //if the category exists, delete it from db
-            await _unitOfWork.Categories.DeleteAsync(id);
-            await _unitOfWork.SaveAsync();
-            return true;
+            return category;
+        }
+        private async Task CheckIfDuplicateNameExists(string name, string id = null)
+        {
+            var productsWithSameName = await _unitOfWork.Categories.FindAsync(p => p.Name == name && (id == null || p.Id != id));
+            if (productsWithSameName.Any())
+            {
+                throw new ArgumentException($"Category with the same name ({name}) already exists.");
+            }
         }
     }
 }

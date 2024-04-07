@@ -39,53 +39,50 @@ namespace StoreProject.BLL.Services
 
         public async Task<GenrePartialDto> AddGenre(GenreCreateDto newGenreDto)
         {
-            var genre = await _unitOfWork.Genres.FindAsync(g => g.Name == newGenreDto.Name);
-            if (genre.Any())
-            {
-                throw new ArgumentException($"Genre with the same name ({newGenreDto.Name}) already exists.");
-            }
+            await CheckIfDuplicateNameExists(newGenreDto.Name);
             //if the genre doesn't exist, create new product in db
             var newGenre = _mapper.Map<Genre>(newGenreDto);
             await _unitOfWork.Genres.AddAsync(newGenre);
             await _unitOfWork.SaveAsync();
             return _mapper.Map<GenrePartialDto>(newGenre);
         }
-        public async Task<bool> UpdateGenre(GenreCreateDto genreToUpdate, string id)
+        public async Task UpdateGenre(GenreCreateDto genreToUpdate, string id)
         {
-            var existingGenre = await _unitOfWork.Genres.GetByIdAsync(id);
-            if (existingGenre == null)
-            {
-                throw new NotFoundException($"Genre with ID {id} not found.");
-            }
+            var existingGenre = await CheckIfGenreExists(id);
             //check if the genre with the same name already exists in db
-            var genreWithNameDuplicate = await _unitOfWork.Genres.FindAsync(p => p.Name == genreToUpdate.Name && p.Id != id);
-            if (genreWithNameDuplicate.Any())
-            {
-                throw new ArgumentException($"Genre with the same name ({genreToUpdate.Name}) already exists.");
-            }
+            await CheckIfDuplicateNameExists(genreToUpdate.Name, id);
             //if the product exists, update it in db
             _mapper.Map(genreToUpdate, existingGenre);
             await _unitOfWork.Genres.UpdateAsync(existingGenre);
             await _unitOfWork.SaveAsync();
-            return true;
         }
 
-        public async Task<bool> DeleteGenre(string id)
+        public async Task DeleteGenre(string id)
         {
             //check if the genre exists in db
+            var genre = await CheckIfGenreExists(id);
+            //if the genre exists, delete it from db
+            await _unitOfWork.Genres.DeleteAsync(genre);
+            await _unitOfWork.SaveAsync();
+        }
+
+        private async Task<Genre> CheckIfGenreExists(string id)
+        {
             var genre = await _unitOfWork.Genres.GetByIdAsync(id);
             if (genre == null)
             {
-                throw new NotFoundException($"Genre with ID {id} not found.");
+                // Genre does not exist
+                throw new ArgumentException($"Genre with the ID ({id}) doesn't exist.");
             }
-            //if the genre exists, delete it from db
-            await _unitOfWork.Genres.DeleteAsync(id);
-            await _unitOfWork.SaveAsync();
-            return true;
+            return genre;
         }
-
-        
-
-        
+        private async Task CheckIfDuplicateNameExists(string name, string id = null)
+        {
+            var productsWithSameName = await _unitOfWork.Genres.FindAsync(p => p.Name == name && (id == null || p.Id != id));
+            if (productsWithSameName.Any())
+            {
+                throw new ArgumentException($"Genre with the same name ({name}) already exists.");
+            }
+        }
     }
 }
