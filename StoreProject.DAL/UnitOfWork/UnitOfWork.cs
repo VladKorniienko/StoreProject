@@ -4,7 +4,7 @@ using StoreProject.DAL.Repositories;
 
 namespace StoreProject.DAL.UnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly StoreContext _dbContext;
         private bool _disposedValue = false;
