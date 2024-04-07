@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using StoreProject.BLL.Dtos.Genre;
 using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
@@ -18,11 +19,13 @@ namespace StoreProject.BLL.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<GenreCreateOrUpdateDto> _genreValidator;
 
-        public GenreService(IUnitOfWork unitOfWork, IMapper mapper)
+        public GenreService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<GenreCreateOrUpdateDto> genreValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _genreValidator = genreValidator;
         }
         public async Task<IEnumerable<GenrePartialDto>> GetGenres()
         {
@@ -37,8 +40,9 @@ namespace StoreProject.BLL.Services
             return genreDto;
         }
 
-        public async Task<GenrePartialDto> AddGenre(GenreCreateDto newGenreDto)
+        public async Task<GenrePartialDto> AddGenre(GenreCreateOrUpdateDto newGenreDto)
         {
+            await CheckValidation(newGenreDto);
             await CheckIfDuplicateNameExists(newGenreDto.Name);
             //if the genre doesn't exist, create new product in db
             var newGenre = _mapper.Map<Genre>(newGenreDto);
@@ -46,8 +50,9 @@ namespace StoreProject.BLL.Services
             await _unitOfWork.SaveAsync();
             return _mapper.Map<GenrePartialDto>(newGenre);
         }
-        public async Task UpdateGenre(GenreCreateDto genreToUpdate, string id)
+        public async Task UpdateGenre(GenreCreateOrUpdateDto genreToUpdate, string id)
         {
+            await CheckValidation(genreToUpdate);
             var existingGenre = await CheckIfGenreExists(id);
             //check if the genre with the same name already exists in db
             await CheckIfDuplicateNameExists(genreToUpdate.Name, id);
@@ -82,6 +87,15 @@ namespace StoreProject.BLL.Services
             if (productsWithSameName.Any())
             {
                 throw new ArgumentException($"Genre with the same name ({name}) already exists.");
+            }
+        }
+        private async Task CheckValidation(GenreCreateOrUpdateDto genreToValidate)
+        {
+            var validationResultForGenre = await _genreValidator.ValidateAsync(genreToValidate);
+            if (!validationResultForGenre.IsValid)
+            {
+                var errorMessage = string.Join(" ", validationResultForGenre.Errors);
+                throw new ArgumentException(errorMessage);
             }
         }
     }
