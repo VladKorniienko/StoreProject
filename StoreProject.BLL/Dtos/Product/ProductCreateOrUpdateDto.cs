@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace StoreProject.BLL.Dtos.Product
 {
     //Do I even need it?
-    public class ProductCreateDto
+    public class ProductCreateOrUpdateDto
     {
         public string? Name { get; set; }
         public decimal PriceUSD { get; set; }

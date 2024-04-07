@@ -27,7 +27,7 @@ namespace StoreProject.Controllers
 
         // POST api/<ProductController>
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> PostProduct(ProductCreateDto newProduct)
+        public async Task<ActionResult<ProductDto>> PostProduct(ProductCreateOrUpdateDto newProduct)
         {
             var createdProductDto = await _productService.AddProduct(newProduct);
             return Created("", createdProductDto);
@@ -35,7 +35,7 @@ namespace StoreProject.Controllers
 
         // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductDto>> PutProduct(string id, ProductCreateDto product)
+        public async Task<ActionResult<ProductDto>> PutProduct(string id, ProductCreateOrUpdateDto product)
         {
             await _productService.UpdateProduct(product, id);
             return NoContent();

@@ -26,7 +26,7 @@ namespace StoreProject.BLL.AutoMapperProfiles
             CreateMap<ProductDto, Product>()
                 .ForMember(dest => dest.Users, opt => opt.Ignore());
 
-            CreateMap<Product, ProductCreateDto>()
+            CreateMap<Product, ProductCreateOrUpdateDto>()
                 .ForMember(dest => dest.GenreId, opt => opt.MapFrom(src => src.Genre.Id))
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.Id))
                 .ReverseMap();
