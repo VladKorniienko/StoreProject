@@ -35,7 +35,7 @@ namespace StoreProject.BLL.Services
         }
         public async Task<GenreDto> GetGenre(string id)
         {
-            var genre = await _unitOfWork.Genres.GetByIdAsync(id);
+            var genre = await _unitOfWork.Genres.GetByIdWithProducts(id);
             var genreDto = _mapper.Map<GenreDto>(genre);
             return genreDto;
         }

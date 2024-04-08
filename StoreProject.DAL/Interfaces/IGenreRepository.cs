@@ -9,5 +9,6 @@ namespace StoreProject.DAL.Interfaces
 {
     public interface IGenreRepository :  IRepositoryBase<Genre>
     {
+        public Task<Genre> GetByIdWithProducts(string id);
     }
 }

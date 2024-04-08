@@ -9,5 +9,6 @@ namespace StoreProject.DAL.Interfaces
 {
     public interface ICategoryRepository : IRepositoryBase<Category>
     {
+        public Task<Category> GetByIdWithProducts(string id);
     }
 }

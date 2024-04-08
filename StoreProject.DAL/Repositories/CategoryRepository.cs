@@ -1,4 +1,5 @@
-﻿using StoreProject.DAL.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using StoreProject.DAL.Context;
 using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
 using System;
@@ -14,6 +15,10 @@ namespace StoreProject.DAL.Repositories
     {
         public CategoryRepository(StoreContext dbContext) : base(dbContext)
         {
+        }
+        public async Task<Category> GetByIdWithProducts(string id)
+        {
+            return await _dbContext.Categories.Where(u => u.Id == id).Include(u => u.Products).FirstOrDefaultAsync();
         }
     }
 }

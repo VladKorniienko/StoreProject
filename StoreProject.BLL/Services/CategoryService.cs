@@ -29,7 +29,7 @@ namespace StoreProject.BLL.Services
         }
         public async Task<CategoryDto> GetCategory(string id)
         {
-            var category = await _unitOfWork.Categories.GetByIdAsync(id);
+            var category = await _unitOfWork.Categories.GetByIdWithProducts(id);
             var categoryDto = _mapper.Map<CategoryDto>(category);
             return categoryDto;
         }
