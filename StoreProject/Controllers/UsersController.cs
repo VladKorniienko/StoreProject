@@ -63,5 +63,12 @@ namespace StoreProject.Controllers
             await _userService.BuyProduct(userId, productId);
             return NoContent();
         }
+        // PUT: api/Users/{id}/ChangePassword
+        [HttpPut("{id}/ChangePassword")]
+        public async Task<IActionResult> ChangePassword(UserChangePasswordDto userChangePasswordDto, string id)
+        {
+            await _userService.ChangePassword(userChangePasswordDto, id);
+            return NoContent();
+        }
     }
 }

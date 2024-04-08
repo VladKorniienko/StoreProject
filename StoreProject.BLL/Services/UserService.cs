@@ -57,7 +57,7 @@ namespace StoreProject.BLL.Services
         public async Task UpdateUser(UserUpdateDto userToUpdate, string id)
         {
             var existingUser = await CheckIfUserExists(id);
-            await CheckIfDuplicateEmailExists(userToUpdate.Email);
+            await CheckIfDuplicateEmailExists(userToUpdate.Email, id);
             _mapper.Map(userToUpdate, existingUser);
 
             var result = await _userManager.UpdateAsync(existingUser);
@@ -109,6 +109,18 @@ namespace StoreProject.BLL.Services
                 }
             }
         }
+        
+        public async Task ChangePassword(UserChangePasswordDto userWithNewPassword, string id)
+        {
+            var existingUser = await CheckIfUserExists(id);
+            var result = await _userManager.ChangePasswordAsync(existingUser, userWithNewPassword.OldPassword, userWithNewPassword.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                throw new ArgumentException(string.Join(" ", errors));
+            }
+        }
+        
         /*
         public async Task<UserDto> LoginUser(UserLoginDto userLoginDto)
         {
@@ -148,9 +160,9 @@ namespace StoreProject.BLL.Services
                 throw new ArgumentException($"Product with the same name ({name}) already exists.");
             }
         }
-        private async Task CheckIfDuplicateEmailExists(string email)
+        private async Task CheckIfDuplicateEmailExists(string email, string id = null)
         {
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingUser = await _userManager.Users.Where(u => u.Email == email && (id == null || u.Id != id)).FirstOrDefaultAsync();
             if (existingUser != null)
             {
                 throw new ArgumentException($"User with the same email ({email}) already exists.");
