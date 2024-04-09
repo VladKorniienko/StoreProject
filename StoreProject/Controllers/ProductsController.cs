@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
 
@@ -6,6 +7,7 @@ using StoreProject.BLL.Interfaces;
 
 namespace StoreProject.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase

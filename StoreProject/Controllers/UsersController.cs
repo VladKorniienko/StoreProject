@@ -57,18 +57,12 @@ namespace StoreProject.Controllers
 
         }
         // PUT: api/Users/userId/Products/productId
-        [HttpPut("{userId}/productId")]
+        [HttpPut("{userId}/{productId}")]
         public async Task<IActionResult> BuyProduct(string userId, string productId)
         {
             await _userService.BuyProduct(userId, productId);
             return NoContent();
         }
-        // PUT: api/Users/{id}/ChangePassword
-        [HttpPut("{id}/ChangePassword")]
-        public async Task<IActionResult> ChangePassword(UserChangePasswordDto userChangePasswordDto, string id)
-        {
-            await _userService.ChangePassword(userChangePasswordDto, id);
-            return NoContent();
-        }
+        
     }
 }
