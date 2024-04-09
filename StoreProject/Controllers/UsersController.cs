@@ -63,6 +63,5 @@ namespace StoreProject.Controllers
             await _userService.BuyProduct(userId, productId);
             return NoContent();
         }
-        
     }
 }

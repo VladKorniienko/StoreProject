@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StoreProject.BLL.Dtos.Token
 {
-    public class Response
+    public class AuthenticationResponse
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }

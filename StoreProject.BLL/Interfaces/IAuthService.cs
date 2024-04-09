@@ -11,7 +11,8 @@ namespace StoreProject.BLL.Interfaces
     public interface IAuthService
     {
         public Task ChangePassword(UserChangePasswordDto userWithNewPassword, string id);
-        public Task<Response> Authenticate(UserLoginDto userLoginDto);
+        public Task<AuthenticationResponse> Authenticate(UserLoginDto userLoginDto);
         public Task<UserDto> Register(UserRegisterDto userRegisterDto);
+        public Task<AuthenticationResponse> RefreshToken(AuthenticationRequest request);
     }
 }

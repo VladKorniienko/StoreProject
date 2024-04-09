@@ -27,7 +27,7 @@ namespace StoreProject.Controllers
 
         // POST: Account/login
         [HttpPost("login")]
-        public async Task<ActionResult<Response>> AuthenticateUser(UserLoginDto user)
+        public async Task<ActionResult<AuthenticationResponse>> AuthenticateUser(UserLoginDto user)
         {
             var authUserDto = await _authService.Authenticate(user);
             return Ok(authUserDto);
@@ -38,6 +38,13 @@ namespace StoreProject.Controllers
         {
             var registerUserDto = await _authService.Register(user);
             return Created("", registerUserDto);
+        }
+        // POST: Account/register
+        [HttpPost("refresh")]
+        public async Task<ActionResult<UserRegisterDto>> RefreshToken(AuthenticationRequest request)
+        {
+            var newToken = await _authService.RefreshToken(request);
+            return Created("", newToken);
         }
     }
 }
