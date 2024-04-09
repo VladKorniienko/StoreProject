@@ -10,7 +10,5 @@ namespace StoreProject.BLL.Interfaces
         public Task UpdateUser(UserUpdateDto userToUpdate, string id);
         public Task DeleteUser(string id);
         public Task BuyProduct(string userId, string productId);
-        public Task ChangePassword(UserChangePasswordDto userWithNewPassword, string id);
-        //public Task<UserDto> loginUser(UserLoginDto userToLogin);
     }
 }

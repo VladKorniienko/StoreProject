@@ -17,6 +17,7 @@ namespace StoreProject.BLL.Services
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
 
+
         public UserService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
         {
             _unitOfWork = unitOfWork;
@@ -45,12 +46,15 @@ namespace StoreProject.BLL.Services
             await CheckIfDuplicateEmailExists(newUserDto.Email);
             //if the user doesn't exist, create new user in db
             var newUser = _mapper.Map<User>(newUserDto);
+
+            //await _userManager.AddToRoleAsync(userToAuthenticate, Role.User.ToString());
             var result = await _userManager.CreateAsync(newUser, newUserDto.Password!);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
                 throw new ArgumentException(string.Join(" ", errors));
             }
+            
             return _mapper.Map<UserDto>(newUser);
         }
 
@@ -109,31 +113,7 @@ namespace StoreProject.BLL.Services
                 }
             }
         }
-        
-        public async Task ChangePassword(UserChangePasswordDto userWithNewPassword, string id)
-        {
-            var existingUser = await CheckIfUserExists(id);
-            var result = await _userManager.ChangePasswordAsync(existingUser, userWithNewPassword.OldPassword, userWithNewPassword.NewPassword);
-            if (!result.Succeeded)
-            {
-                var errors = result.Errors.Select(e => e.Description);
-                throw new ArgumentException(string.Join(" ", errors));
-            }
-        }
-        
-        /*
-        public async Task<UserDto> LoginUser(UserLoginDto userLoginDto)
-        {
-            if (userLoginDto.Email == null && userLoginDto.Password == null)
-            {
-                throw new ArgumentException($"No login details specified.");
-            }
-            var user = await _unitOfWork.Users.FindAsync(u => u.Email == userLoginDto.Email);
-            if (user.FirstOrDefault() == null)
-            {
-                throw new NotFoundException($"User with email {userLoginDto.Email} not found.");
-            }
-        }*/
+
         private async Task<Product> CheckIfProductExists(string id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
