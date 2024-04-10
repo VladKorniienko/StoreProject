@@ -46,5 +46,14 @@ namespace StoreProject.Controllers
             var newToken = await _authService.RefreshToken(request);
             return Created("", newToken);
         }
+
+        [HttpPost("logout")]
+        public async Task<ActionResult<bool>> Logout()
+        {
+            var resultMessage = await _authService.LogoutAsync(User);
+            return Ok(resultMessage);
+                
+        }
+
     }
 }

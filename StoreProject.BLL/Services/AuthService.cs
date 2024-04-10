@@ -23,7 +23,7 @@ namespace StoreProject.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly IMapper _mapper;
-        public AuthService(UserManager<User> userManager, IMapper mapper, IOptions<JwtSettings> jwtSettings) 
+        public AuthService(UserManager<User> userManager, IMapper mapper, IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
@@ -68,7 +68,13 @@ namespace StoreProject.BLL.Services
             {
                 throw new NotFoundException($"User not found.");
             }
-            if(!await _userManager
+            var storedRefreshToken = await _userManager
+                .GetAuthenticationTokenAsync(user, "REFRESHTOKENPROVIDER", "RefreshToken");
+            if (storedRefreshToken != request.RefreshToken)
+            {
+                throw new SecurityTokenExpiredException($"Invalid refresh token.");
+            }
+            if (!await _userManager
                 .VerifyUserTokenAsync(user, "REFRESHTOKENPROVIDER", "RefreshToken", request.RefreshToken))
             {
                 throw new SecurityTokenExpiredException($"Refresh token expired.");
@@ -93,6 +99,22 @@ namespace StoreProject.BLL.Services
             }
             return _mapper.Map<UserDto>(newUser);
         }
+
+        public async Task<string> LogoutAsync(ClaimsPrincipal user)
+        {
+            if(user.Identity?.IsAuthenticated ?? false)
+            {
+                var userName = user.Identity.Name;
+                var appUser = await _userManager.FindByNameAsync(userName);
+                if (appUser != null)
+                {
+                    await _userManager.RemoveAuthenticationTokenAsync(appUser, "REFRESHTOKENPROVIDER", "RefreshToken");
+                }
+                return "User's refresh token successfully invalidated.";
+            }
+            return "User is already logged out.";
+        }
+
         private async Task<AuthenticationResponse> GenerateTokenAsync(User user)
         {
             var userClaims = new List<Claim>

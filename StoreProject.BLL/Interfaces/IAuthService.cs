@@ -3,6 +3,7 @@ using StoreProject.BLL.Dtos.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,5 +15,6 @@ namespace StoreProject.BLL.Interfaces
         public Task<AuthenticationResponse> Authenticate(UserLoginDto userLoginDto);
         public Task<UserDto> Register(UserRegisterDto userRegisterDto);
         public Task<AuthenticationResponse> RefreshToken(AuthenticationRequest request);
+        public Task<string> LogoutAsync(ClaimsPrincipal user);
     }
 }
