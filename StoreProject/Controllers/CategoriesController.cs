@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.Category;
 using StoreProject.BLL.Interfaces;
+using StoreProject.Common.Constants;
 
 namespace StoreProject.Controllers
 {
@@ -29,6 +31,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<CategoryPartialDto>> PostCategory(CategoryCreateOrUpdateDto newCategory)
         {
             var createdCategoryDto = await _categoryService.AddCategory(newCategory);
@@ -36,6 +39,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<CategoryPartialDto>> PutCategory(CategoryCreateOrUpdateDto genre, string id)
         {
             await _categoryService.UpdateCategory(genre, id);
@@ -43,6 +47,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteCategory(string id)
         {
             await _categoryService.DeleteCategory(id);

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
+using StoreProject.Common.Constants;
+using System.Security.Claims;
 
 namespace StoreProject.Controllers
 {
@@ -14,7 +17,7 @@ namespace StoreProject.Controllers
             _userService = userService;
         }
 
-        // GET:
+        [Authorize(Roles = Roles.Admin)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -22,36 +25,54 @@ namespace StoreProject.Controllers
             return Ok(users);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
-
         public async Task<ActionResult<UserDto>> GetUser(string id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(userId != id && !User.IsInRole(Roles.Admin))
+            {
+                return Forbid();
+            }
             var user = await _userService.GetUser(id);
             return Ok(user);
         }
-
-        //PUT:
+        
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> PutUser(string id, UserUpdateDto user)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != id && !User.IsInRole(Roles.Admin))
+            {
+                return Forbid();
+            }
             await _userService.UpdateUser(user, id);
             return NoContent();
-
         }
 
-        //DELETE:
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != id && !User.IsInRole(Roles.Admin))
+            {
+                return Forbid();
+            }
             await _userService.DeleteUser(id);
             return NoContent();
-
         }
-        // PUT: api/Users/userId/Products/productId
+        
+        [Authorize]
         [HttpPut("{userId}/{productId}")]
         public async Task<IActionResult> BuyProduct(string userId, string productId)
         {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId != userId && !User.IsInRole(Roles.Admin))
+            {
+                return Forbid();
+            }
             await _userService.BuyProduct(userId, productId);
             return NoContent();
         }

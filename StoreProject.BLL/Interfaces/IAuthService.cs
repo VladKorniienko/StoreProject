@@ -17,5 +17,6 @@ namespace StoreProject.BLL.Interfaces
         public Task<AuthenticationResponse> RefreshToken(AuthenticationRequest request);
         public Task<string> LogoutAsync(ClaimsPrincipal user);
         public Task AddToAdminRole(string id);
+        public Task RemoveFromAdminRole(string id);
     }
 }

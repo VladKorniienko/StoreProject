@@ -31,7 +31,7 @@ namespace StoreProject.BLL.Services
 
         public async Task<ProductDto> GetProduct(string id)
         {
-            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            var product = await _unitOfWork.Products.GetByIdWithAllDetails(id);
             var productDto = _mapper.Map<ProductDto>(product);
             return productDto;
         }

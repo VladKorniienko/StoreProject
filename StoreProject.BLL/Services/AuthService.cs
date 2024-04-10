@@ -100,6 +100,19 @@ namespace StoreProject.BLL.Services
                 await RetryAddingToRole(user, Roles.Admin);
             }
         }
+        public async Task RemoveFromAdminRole(string id)
+        {
+            var user = await CheckIfUserExists(id);
+
+            //try
+            //{
+                await _userManager.RemoveFromRoleAsync(user, Roles.Admin);
+            //}
+            //catch
+            //{
+            //    await RetryAddingToRole(user, Roles.Admin);
+            //}
+        }
         public async Task<UserInfoWithRoleDto> Register(UserRegisterDto userRegisterDto)
         {
             //check wheter the user with the same email already exists in db
@@ -161,6 +174,7 @@ namespace StoreProject.BLL.Services
         {
             var userClaims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email)
             };
@@ -192,6 +206,7 @@ namespace StoreProject.BLL.Services
                 (user, "REFRESHTOKENPROVIDER", "RefreshToken", refreshToken);
             return new AuthenticationResponse()
             {
+                Id = user.Id,
                 Token = tokenString,
                 RefreshToken = refreshToken
             };

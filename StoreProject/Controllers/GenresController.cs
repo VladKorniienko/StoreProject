@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.Genre;
 using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
 using StoreProject.BLL.Services;
+using StoreProject.Common.Constants;
 
 namespace StoreProject.Controllers
 {
@@ -32,6 +34,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<GenrePartialDto>> PostGenre(GenreCreateOrUpdateDto newGenre)
         {
             var createdGenreDto = await _genreService.AddGenre(newGenre);
@@ -39,6 +42,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<GenrePartialDto>> PutGenre(GenreCreateOrUpdateDto genre, string id)
         {
             await _genreService.UpdateGenre(genre, id);
@@ -46,6 +50,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteGenre(string id)
         {
             await _genreService.DeleteGenre(id);
