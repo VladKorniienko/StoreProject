@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using StoreProject.BLL.Dtos.Token;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
+using StoreProject.Common.Constants;
 using StoreProject.Common.Exceptions;
 using StoreProject.DAL.Models;
 using System;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StoreProject.BLL.Services
 {
@@ -23,11 +25,14 @@ namespace StoreProject.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly IMapper _mapper;
-        public AuthService(UserManager<User> userManager, IMapper mapper, IOptions<JwtSettings> jwtSettings)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public AuthService(UserManager<User> userManager, IMapper mapper,
+            IOptions<JwtSettings> jwtSettings, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
             _mapper = mapper;
+            _roleManager = roleManager;
         }
 
         public async Task ChangePassword(UserChangePasswordDto userWithNewPassword, string id)
@@ -82,7 +87,20 @@ namespace StoreProject.BLL.Services
             var token = await GenerateTokenAsync(user);
             return token;
         }
-        public async Task<UserDto> Register(UserRegisterDto userRegisterDto)
+        public async Task AddToAdminRole(string id)
+        {
+            var user = await CheckIfUserExists(id);
+
+            try
+            {
+                await _userManager.AddToRoleAsync(user, Roles.Admin);
+            }
+            catch
+            {
+                await RetryAddingToRole(user, Roles.Admin);
+            }
+        }
+        public async Task<UserInfoWithRoleDto> Register(UserRegisterDto userRegisterDto)
         {
             //check wheter the user with the same email already exists in db
             //var existingUser = await _unitOfWork.Users.FindAsync(u => u.Email == newUserDto.Email);
@@ -91,18 +109,29 @@ namespace StoreProject.BLL.Services
             var newUser = _mapper.Map<User>(userRegisterDto);
 
             //await _userManager.AddToRoleAsync(userToAuthenticate, Role.User.ToString());
-            var result = await _userManager.CreateAsync(newUser, userRegisterDto.Password!);
-            if (!result.Succeeded)
+            var resultOfCreatingUser = await _userManager.CreateAsync(newUser, userRegisterDto.Password!);
+            if (!resultOfCreatingUser.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description);
+                var errors = resultOfCreatingUser.Errors.Select(e => e.Description);
                 throw new ArgumentException(string.Join(" ", errors));
             }
-            return _mapper.Map<UserDto>(newUser);
+
+            try
+            {
+                await _userManager.AddToRoleAsync(newUser, Roles.User);
+            }
+            catch
+            {
+                await RetryAddingToRole(newUser, Roles.User);
+            }
+            var createdUser = _mapper.Map<UserInfoWithRoleDto>(newUser);
+            createdUser.Role = "User";
+            return createdUser;
         }
 
         public async Task<string> LogoutAsync(ClaimsPrincipal user)
         {
-            if(user.Identity?.IsAuthenticated ?? false)
+            if (user.Identity?.IsAuthenticated ?? false)
             {
                 var userName = user.Identity.Name;
                 var appUser = await _userManager.FindByNameAsync(userName);
@@ -114,7 +143,20 @@ namespace StoreProject.BLL.Services
             }
             return "User is already logged out.";
         }
-
+        private async Task RetryAddingToRole(User user, string role)
+        {
+            var roleExist = await _roleManager.RoleExistsAsync(role);
+            if (!roleExist)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(role));
+                var retryAddingToRole = await _userManager.AddToRoleAsync(user, role);
+                if (!retryAddingToRole.Succeeded)
+                {
+                    var errors = retryAddingToRole.Errors.Select(e => e.Description);
+                    throw new ArgumentException(string.Join(" ", errors));
+                }
+            }
+        }
         private async Task<AuthenticationResponse> GenerateTokenAsync(User user)
         {
             var userClaims = new List<Claim>

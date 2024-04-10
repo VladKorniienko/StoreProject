@@ -9,6 +9,7 @@ using StoreProject.DAL.Context;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using StoreProject.DAL.Data;
 
 namespace StoreProject.BLL
 {
@@ -46,7 +47,6 @@ namespace StoreProject.BLL
             {
                 options.TokenLifespan = TimeSpan.FromSeconds(Convert.ToDouble(configuration["JwtSettings:RefreshTokenExpireTimeSeconds"]));
             });
-
         }
     }
 }

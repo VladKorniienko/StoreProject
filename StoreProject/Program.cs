@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using StoreProject.BLL.Dtos.Token;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,8 +58,6 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
-
-
 
 var app = builder.Build();
 

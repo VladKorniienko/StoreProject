@@ -16,6 +16,10 @@ namespace StoreProject.BLL.AutoMapperProfiles
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<UserDto, User>()
                 .ForMember(dest => dest.Products, opt => opt.Ignore());
+            CreateMap<User, UserInfoWithRoleDto>().
+                ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
+            CreateMap<UserInfoWithRoleDto, User>()
+                .ForMember(dest => dest.Products, opt => opt.Ignore());
             CreateMap<ProductPartialDto, Product>().ReverseMap(); //necessary for nested mapping
         }
     }

@@ -13,8 +13,9 @@ namespace StoreProject.BLL.Interfaces
     {
         public Task ChangePassword(UserChangePasswordDto userWithNewPassword, string id);
         public Task<AuthenticationResponse> Authenticate(UserLoginDto userLoginDto);
-        public Task<UserDto> Register(UserRegisterDto userRegisterDto);
+        public Task<UserInfoWithRoleDto> Register(UserRegisterDto userRegisterDto);
         public Task<AuthenticationResponse> RefreshToken(AuthenticationRequest request);
         public Task<string> LogoutAsync(ClaimsPrincipal user);
+        public Task AddToAdminRole(string id);
     }
 }

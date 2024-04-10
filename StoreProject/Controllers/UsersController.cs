@@ -30,14 +30,6 @@ namespace StoreProject.Controllers
             return Ok(user);
         }
 
-        // POST:
-        [HttpPost]
-        public async Task<ActionResult<UserRegisterDto>> PostUser(UserRegisterDto newUser)
-        {
-            var createdUserDto = await _userService.AddUser(newUser);
-            return Created("", createdUserDto);
-        }
-
         //PUT:
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> PutUser(string id, UserUpdateDto user)

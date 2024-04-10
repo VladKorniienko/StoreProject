@@ -31,33 +31,16 @@ namespace StoreProject.BLL.Services
             var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
             return usersDto;
         }
-        public async Task<UserDto> GetUser(string id)
+        public async Task<UserInfoWithRoleDto> GetUser(string id)
         {
-            //var user = await _unitOfWork.Users.GetByIdWithProducts(id);
-            var user = await CheckIfUserExists(id);
-            var userDto = _mapper.Map<UserDto>(user);
+            var user = await _userManager.Users
+                .Where(u=>u.Id == id).Include(u => u.Products).FirstOrDefaultAsync();
+            var userDto = _mapper.Map<UserInfoWithRoleDto>(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            userDto.Role = roles.Contains("Admin") ? "Admin" : "User";
             return userDto;
+
         }
-
-        public async Task<UserDto> AddUser(UserRegisterDto newUserDto)
-        {
-            //check wheter the user with the same email already exists in db
-            //var existingUser = await _unitOfWork.Users.FindAsync(u => u.Email == newUserDto.Email);
-            await CheckIfDuplicateEmailExists(newUserDto.Email);
-            //if the user doesn't exist, create new user in db
-            var newUser = _mapper.Map<User>(newUserDto);
-
-            //await _userManager.AddToRoleAsync(userToAuthenticate, Role.User.ToString());
-            var result = await _userManager.CreateAsync(newUser, newUserDto.Password!);
-            if (!result.Succeeded)
-            {
-                var errors = result.Errors.Select(e => e.Description);
-                throw new ArgumentException(string.Join(" ", errors));
-            }
-            
-            return _mapper.Map<UserDto>(newUser);
-        }
-
         public async Task UpdateUser(UserUpdateDto userToUpdate, string id)
         {
             var existingUser = await CheckIfUserExists(id);

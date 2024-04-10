@@ -55,5 +55,12 @@ namespace StoreProject.Controllers
                 
         }
 
+        [HttpPut("{id}/makeAdmin")]
+        public async Task<ActionResult> MakeAdmin(string id)
+        {
+            await _authService.AddToAdminRole(id);
+            return NoContent();
+        }
+
     }
 }

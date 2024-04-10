@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using StoreProject.BLL.Dtos.Product;
 using StoreProject.BLL.Interfaces;
+using StoreProject.Common.Constants;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace StoreProject.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -29,6 +29,7 @@ namespace StoreProject.Controllers
 
         // POST api/<ProductController>
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductCreateOrUpdateDto newProduct)
         {
             var createdProductDto = await _productService.AddProduct(newProduct);
