@@ -1,7 +1,4 @@
 # Store
-## To-do
-- [ ] Add Forgot Password
-- [ ] Add role managing
 ## Features
 ### - 3-layered Web API in .NET 8
 ### - ASP.NET Core Identity
