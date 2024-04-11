@@ -8,6 +8,7 @@
         public string GenreId { get; set; }
         public string CategoryId { get; set; }
         public string? Description { get; set; }
+        public byte[] Icon { get; set; }
         public List<User>? Users { get; } = new();
         public Genre Genre { get; set; }
         public Category Category { get; set; }
