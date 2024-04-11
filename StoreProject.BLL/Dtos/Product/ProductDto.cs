@@ -10,9 +10,10 @@ namespace StoreProject.BLL.Dtos.Product
         public string Id { get; set; }
         public string? Name { get; set; }
         public decimal PriceUSD { get; set; }
+        public string? Description { get; set; }
+        public string? Icon { get; set; }
         public GenrePartialDto Genre { get; set; }
         public CategoryPartialDto Category { get; set; }
-        public string? Description { get; set; }
         public List<UserPartialDto> Users { get; } = new();
     }
 }

@@ -47,6 +47,7 @@ namespace StoreProject.BLL.Services
             var category = await CheckIfCategoryExists(newProductDto.CategoryId);
 
             var newProduct = _mapper.Map<Product>(newProductDto);
+            
             // associate genre and category with the product
             newProduct.Genre = genre;
             newProduct.Category = category;

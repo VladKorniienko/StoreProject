@@ -35,8 +35,8 @@ namespace StoreProject.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<ProductDto>> PostProduct(ProductCreateOrUpdateDto newProduct)
+        //[Authorize(Roles = Roles.Admin)]
+        public async Task<ActionResult<ProductDto>> PostProduct([FromForm]ProductCreateOrUpdateDto newProduct)
         {
             var createdProductDto = await _productService.AddProduct(newProduct);
             return Created("", createdProductDto);

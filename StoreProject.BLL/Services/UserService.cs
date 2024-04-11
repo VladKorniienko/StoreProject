@@ -25,10 +25,29 @@ namespace StoreProject.BLL.Services
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<UserDto>> GetUsers()
+        //public async IAsyncEnumerable<UserInfoWithRoleDto> GetUsers()
+        //{
+        //    var users = _userManager.Users.Include(u => u.Products).AsAsyncEnumerable();
+      
+        //    await foreach(var user in users) 
+        //    {
+        //        var userRoles = await _userManager.GetRolesAsync(user);
+        //        var userDto = _mapper.Map<UserInfoWithRoleDto>(user);
+        //        userDto.Role = userRoles.Contains("Admin") ? "Admin" : "User";
+        //        yield return userDto;
+        //    }
+        //}
+        public async Task<IEnumerable<UserInfoWithRoleDto>> GetUsers()
         {
-            var users = await _userManager.Users.Include(u => u.Products).ToListAsync();
-            var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
+            var users = _userManager.Users.Include(u => u.Products);
+            var usersDto = new List<UserInfoWithRoleDto>();
+            foreach (var user in users)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var userDto = _mapper.Map<UserInfoWithRoleDto>(user);
+                userDto.Role = userRoles.Contains("Admin") ? "Admin" : "User";
+                usersDto.Add(userDto);
+            }
             return usersDto;
         }
         public async Task<UserInfoWithRoleDto> GetUser(string id)

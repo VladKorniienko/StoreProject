@@ -17,13 +17,23 @@ namespace StoreProject.Controllers
             _userService = userService;
         }
 
-        [Authorize(Roles = Roles.Admin)]
+        //[Authorize(Roles = Roles.Admin)]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserInfoWithRoleDto>>> GetUsers()
         {
             var users = await _userService.GetUsers();
             return Ok(users);
         }
+        //public async Task<ActionResult<IEnumerable<UserInfoWithRoleDto>>> GetUsers()
+        //{
+        //    var users = _userService.GetUsers();
+        //    var userList = new List<UserInfoWithRoleDto>();
+        //    await foreach (var user in users)
+        //    {
+        //        userList.Add(user);
+        //    }
+        //    return Ok(userList);
+        //}
 
         [Authorize]
         [HttpGet("{id}")]

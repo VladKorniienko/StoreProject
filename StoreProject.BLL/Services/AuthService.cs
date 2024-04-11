@@ -9,14 +9,9 @@ using StoreProject.BLL.Interfaces;
 using StoreProject.Common.Constants;
 using StoreProject.Common.Exceptions;
 using StoreProject.DAL.Models;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StoreProject.BLL.Services
 {
