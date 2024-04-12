@@ -16,7 +16,9 @@ namespace StoreProject.BLL.AutoMapperProfiles
                 .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
                 .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.Users))
-                .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => Convert.ToBase64String(src.Icon)));
+                .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => Convert.ToBase64String(src.Icon)))
+                .ForMember(dest => dest.Screenshots, opt => opt
+                .MapFrom(src => src.Screenshots.Select(screenshot => Convert.ToBase64String(screenshot)).ToList()));
             CreateMap<ProductDto, Product>()
                 .ForMember(dest => dest.Genre, opt => opt.Ignore())
                 .ForMember(dest => dest.Category, opt => opt.Ignore())
@@ -27,7 +29,10 @@ namespace StoreProject.BLL.AutoMapperProfiles
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.Id))
                 .ReverseMap();
             CreateMap<ProductCreateOrUpdateDto, Product>()
-            .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => ConvertIFormFileToByteArray(src.Icon)));
+            .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => ConvertIFormFileToByteArray(src.Icon)))
+            .ForMember(dest => dest.Screenshots, opt => opt
+                .MapFrom(src => src.Screenshots.Select(screenshot => ConvertIFormFileToByteArray(screenshot)).ToList()));
+
 
             CreateMap<UserPartialDto, User>().ReverseMap(); //necessary for nested mapping
             CreateMap<CategoryPartialDto, Category>().ReverseMap(); //necessary for nested mapping

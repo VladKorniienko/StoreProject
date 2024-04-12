@@ -17,5 +17,6 @@ namespace StoreProject.BLL.Dtos.Product
         public string? CategoryId { get; set; }
         public string? Description { get; set; }
         public IFormFile Icon { get; set; }
+        public IFormFileCollection Screenshots { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace StoreProject.BLL.Services
         public async Task<ProductDto> AddProduct(ProductCreateOrUpdateDto newProductDto)
         {
             await CheckValidation(newProductDto);
-            //check wheter the product with the same name already exists in db
+            //check whether the product with the same name already exists in db
             await CheckIfDuplicateNameExists(newProductDto.Name);
             // find genre
             var genre = await CheckIfGenreExists(newProductDto.GenreId);
