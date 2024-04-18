@@ -23,7 +23,28 @@ namespace StoreProject.Controllers
         public async Task<ActionResult<AuthenticationResponse>> AuthenticateUser(UserLoginDto user)
         {
             var authUserDto = await _authService.Authenticate(user);
-            return Ok(authUserDto);
+
+            if (authUserDto != null)
+            {
+                // Set the JWT token in an HttpOnly cookie
+                Response.Cookies.Append("token", authUserDto.Token,
+                new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(2),
+                    HttpOnly = true,
+                    Secure = true, // Only send the cookie over HTTPS.
+                    SameSite = SameSiteMode.None // Helps mitigate CSRF attacks.
+                });
+                Response.Cookies.Append("refreshToken", authUserDto.RefreshToken, new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(7),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None
+                });
+                return Ok(new { Id = authUserDto.Id });
+            }
+            return Unauthorized();
         }
 
         [HttpPost("register")]
@@ -34,10 +55,37 @@ namespace StoreProject.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<ActionResult<UserRegisterDto>> RefreshToken(AuthenticationRequest request)
+        public async Task<ActionResult> RefreshToken()
         {
-            var newToken = await _authService.RefreshToken(request);
-            return Created("", newToken);
+            AuthenticationRequest request = new AuthenticationRequest
+            {
+                OldToken = Request.Cookies["token"]!,
+                RefreshToken = Request.Cookies["refreshToken"]!
+            };
+            if (request.OldToken != null && request.RefreshToken != null)
+            {
+                var newToken = await _authService.RefreshToken(request);
+                if (newToken != null)
+                {
+                    // Set the JWT token in an HttpOnly cookie
+                    Response.Cookies.Append("token", newToken.Token, new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddDays(2),
+                        HttpOnly = true,
+                        Secure = true, // Only send the cookie over HTTPS.
+                        SameSite = SameSiteMode.None // Helps mitigate CSRF attacks.
+                    });
+                    Response.Cookies.Append("refreshToken", newToken.RefreshToken, new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddDays(7),
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.None
+                    });
+                    return Ok(new { UserId = newToken.Id });
+                }
+            }
+            return Unauthorized();
         }
 
         [Authorize]
@@ -72,6 +120,10 @@ namespace StoreProject.Controllers
         public async Task<ActionResult<bool>> Logout()
         {
             var resultMessage = await _authService.LogoutAsync(User);
+            // Clear the JWT token cookie
+            Response.Cookies.Delete("jwt_token", new CookieOptions { Secure = true, HttpOnly = true });
+            // Clear the refresh token cookie
+            Response.Cookies.Delete("refresh_token", new CookieOptions { Secure = true, HttpOnly = true });
             return Ok(resultMessage);
         }
 
