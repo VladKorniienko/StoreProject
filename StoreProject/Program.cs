@@ -84,12 +84,13 @@ if (app.Environment.IsDevelopment())
 }
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseHttpsRedirection();
+
 app.UseCors(x => x
-            .WithOrigins("https://localhost:3000")
+            .WithOrigins("https://localhost:3000", "https://localhost:4200")
+            .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials()
-            .AllowAnyHeader());
+            .AllowCredentials());
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

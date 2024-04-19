@@ -33,14 +33,14 @@ namespace StoreProject.Controllers
                     Expires = DateTime.Now.AddDays(2),
                     HttpOnly = true,
                     Secure = true, // Only send the cookie over HTTPS.
-                    SameSite = SameSiteMode.None // Helps mitigate CSRF attacks.
+                    SameSite = SameSiteMode.Strict // Helps mitigate CSRF attacks.
                 });
                 Response.Cookies.Append("refreshToken", authUserDto.RefreshToken, new CookieOptions
                 {
                     Expires = DateTime.Now.AddDays(7),
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None
+                    SameSite = SameSiteMode.Strict
                 });
                 return Ok(new { Id = authUserDto.Id });
             }
@@ -73,14 +73,14 @@ namespace StoreProject.Controllers
                         Expires = DateTime.Now.AddDays(2),
                         HttpOnly = true,
                         Secure = true, // Only send the cookie over HTTPS.
-                        SameSite = SameSiteMode.None // Helps mitigate CSRF attacks.
+                        SameSite = SameSiteMode.Strict // Helps mitigate CSRF attacks.
                     });
                     Response.Cookies.Append("refreshToken", newToken.RefreshToken, new CookieOptions
                     {
                         Expires = DateTime.Now.AddDays(7),
                         HttpOnly = true,
                         Secure = true,
-                        SameSite = SameSiteMode.None
+                        SameSite = SameSiteMode.Strict
                     });
                     return Ok(new { UserId = newToken.Id });
                 }

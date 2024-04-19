@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StoreProject.BLL.Dtos.Token;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
 using StoreProject.Common.Constants;
@@ -17,7 +18,7 @@ namespace StoreProject.Controllers
             _userService = userService;
         }
 
-        //[Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.Admin)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserInfoWithRoleDto>>> GetUsers()
         {
@@ -39,6 +40,11 @@ namespace StoreProject.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(string id)
         {
+            AuthenticationRequest request = new AuthenticationRequest
+            {
+                OldToken = Request.Cookies["token"]!,
+                RefreshToken = Request.Cookies["refreshToken"]!
+            };
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if(userId != id && !User.IsInRole(Roles.Admin))
             {
