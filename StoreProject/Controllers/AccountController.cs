@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StoreProject.BLL.Dtos.Token;
 using StoreProject.BLL.Dtos.User;
 using StoreProject.BLL.Interfaces;
@@ -14,35 +15,36 @@ namespace StoreProject.Controllers
     {
 
         private readonly IAuthService _authService;
-        public AccountController(IAuthService authService)
+        private readonly JwtSettings _jwtSettings;
+        public AccountController(IAuthService authService, IOptions<JwtSettings> jwtSettings)
         {
             _authService = authService;
+            _jwtSettings = jwtSettings.Value;
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthenticationResponse>> AuthenticateUser(UserLoginDto user)
+        public async Task<ActionResult> AuthenticateUser(UserLoginDto user)
         {
             var authUserDto = await _authService.Authenticate(user);
 
             if (authUserDto != null)
             {
-                // Set the JWT token in an HttpOnly cookie
                 Response.Cookies.Append("token", authUserDto.Token,
-                new CookieOptions
-                {
-                    Expires = DateTime.Now.AddDays(2),
-                    HttpOnly = true,
-                    Secure = true, // Only send the cookie over HTTPS.
-                    SameSite = SameSiteMode.Strict // Helps mitigate CSRF attacks.
-                });
+               new CookieOptions
+               {
+                   Expires = DateTime.UtcNow.AddSeconds(_jwtSettings.RefreshTokenExpireTimeSeconds),
+                   HttpOnly = true,
+                   Secure = true, // Only send the cookie over HTTPS.
+                   SameSite = SameSiteMode.Strict // Helps mitigate CSRF attacks.
+               });
                 Response.Cookies.Append("refreshToken", authUserDto.RefreshToken, new CookieOptions
                 {
-                    Expires = DateTime.Now.AddDays(7),
+                    Expires = DateTime.UtcNow.AddSeconds(_jwtSettings.RefreshTokenExpireTimeSeconds),
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.Strict
                 });
-                return Ok(new { Id = authUserDto.Id });
+                return Ok(new { Id = authUserDto.Id});
             }
             return Unauthorized();
         }
@@ -57,32 +59,31 @@ namespace StoreProject.Controllers
         [HttpPost("refresh")]
         public async Task<ActionResult> RefreshToken()
         {
-            AuthenticationRequest request = new AuthenticationRequest
+            RefreshTokenRequest refreshTokenInfo = new RefreshTokenRequest
             {
                 OldToken = Request.Cookies["token"]!,
                 RefreshToken = Request.Cookies["refreshToken"]!
             };
-            if (request.OldToken != null && request.RefreshToken != null)
+            if (refreshTokenInfo.OldToken != null && refreshTokenInfo.RefreshToken != null)
             {
-                var newToken = await _authService.RefreshToken(request);
+                var newToken = await _authService.RefreshToken(refreshTokenInfo);
                 if (newToken != null)
                 {
-                    // Set the JWT token in an HttpOnly cookie
                     Response.Cookies.Append("token", newToken.Token, new CookieOptions
                     {
-                        Expires = DateTime.Now.AddDays(2),
+                        Expires = DateTime.UtcNow.AddSeconds(_jwtSettings.RefreshTokenExpireTimeSeconds),
                         HttpOnly = true,
                         Secure = true, // Only send the cookie over HTTPS.
                         SameSite = SameSiteMode.Strict // Helps mitigate CSRF attacks.
                     });
                     Response.Cookies.Append("refreshToken", newToken.RefreshToken, new CookieOptions
                     {
-                        Expires = DateTime.Now.AddDays(7),
+                        Expires = DateTime.UtcNow.AddSeconds(_jwtSettings.RefreshTokenExpireTimeSeconds),
                         HttpOnly = true,
                         Secure = true,
                         SameSite = SameSiteMode.Strict
                     });
-                    return Ok(new { UserId = newToken.Id });
+                    return Ok(new { Id = newToken.Id});
                 }
             }
             return Unauthorized();

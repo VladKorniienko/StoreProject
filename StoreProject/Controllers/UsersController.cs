@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace StoreProject.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -40,11 +41,7 @@ namespace StoreProject.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(string id)
         {
-            AuthenticationRequest request = new AuthenticationRequest
-            {
-                OldToken = Request.Cookies["token"]!,
-                RefreshToken = Request.Cookies["refreshToken"]!
-            };
+            var a = Request.Cookies["token"];
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if(userId != id && !User.IsInRole(Roles.Admin))
             {

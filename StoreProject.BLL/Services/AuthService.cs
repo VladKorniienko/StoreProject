@@ -56,7 +56,7 @@ namespace StoreProject.BLL.Services
             var token = await GenerateTokenAsync(userToAuthenticate);
             return token;
         }
-        public async Task<AuthenticationResponse> RefreshToken(AuthenticationRequest request)
+        public async Task<AuthenticationResponse> RefreshToken(RefreshTokenRequest request)
         {
             var principal = GetPrincipalFromExpiredToken(request.OldToken);
             if (principal == null || principal.Identity.Name == null)
