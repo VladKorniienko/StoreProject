@@ -118,13 +118,13 @@ namespace StoreProject.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public async Task<ActionResult<bool>> Logout()
+        public async Task<ActionResult> Logout()
         {
             var resultMessage = await _authService.LogoutAsync(User);
             // Clear the JWT token cookie
-            Response.Cookies.Delete("jwt_token", new CookieOptions { Secure = true, HttpOnly = true });
+            Response.Cookies.Delete("token", new CookieOptions { Secure = true, HttpOnly = true });
             // Clear the refresh token cookie
-            Response.Cookies.Delete("refresh_token", new CookieOptions { Secure = true, HttpOnly = true });
+            Response.Cookies.Delete("refreshToken", new CookieOptions { Secure = true, HttpOnly = true });
             return Ok(resultMessage);
         }
 

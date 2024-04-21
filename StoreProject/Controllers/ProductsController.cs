@@ -51,7 +51,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        //[Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteProduct(string id)
         {
             await _productService.DeleteProduct(id);
