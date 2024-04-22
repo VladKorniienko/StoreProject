@@ -13,8 +13,8 @@ namespace StoreProject.BLL.AutoMapperProfiles
         public ProductToProductDtoProfile()
         {
             CreateMap<Product, ProductDto>()
-                .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre))
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.GenreName, opt => opt.MapFrom(src => src.Genre.Name))
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.Users))
                 .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => Convert.ToBase64String(src.Icon)))
                 .ForMember(dest => dest.Screenshots, opt => opt
