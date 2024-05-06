@@ -18,7 +18,12 @@ namespace StoreProject.DAL.Repositories
 
         public async Task<User> GetByIdWithProducts(string id)
         {
-            return await _dbContext.Users.Where(u => u.Id == id).Include(u => u.Products).FirstOrDefaultAsync();
+            return await _dbContext.Users
+                .Include(u => u.Products)
+                .ThenInclude(p => p.Genre)
+                .Include(u => u.Products)
+                .ThenInclude(p => p.Category)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
     }
 }

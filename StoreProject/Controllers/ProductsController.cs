@@ -44,7 +44,7 @@ namespace StoreProject.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<ProductDto>> PutProduct(string id, ProductCreateOrUpdateDto product)
+        public async Task<ActionResult> PutProduct(string id, [FromForm]ProductCreateOrUpdateDto product)
         {
             await _productService.UpdateProduct(product, id);
             return NoContent();

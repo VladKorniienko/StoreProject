@@ -44,7 +44,7 @@ namespace StoreProject.Controllers
                     Secure = true,
                     SameSite = SameSiteMode.Strict
                 });
-                return Ok(new { Id = authUserDto.Id});
+                return Ok(new { Id = authUserDto.Id, Role = authUserDto.Role});
             }
             return Unauthorized();
         }
@@ -83,7 +83,7 @@ namespace StoreProject.Controllers
                         Secure = true,
                         SameSite = SameSiteMode.Strict
                     });
-                    return Ok(new { Id = newToken.Id});
+                    return Ok(new { Id = newToken.Id, Role = newToken.Role});
                 }
             }
             return Unauthorized();

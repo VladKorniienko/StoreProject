@@ -53,7 +53,11 @@ namespace StoreProject.BLL.Services
         public async Task<UserInfoWithRoleDto> GetUser(string id)
         {
             var user = await _userManager.Users
-                .Where(u => u.Id == id).Include(u => u.Products).FirstOrDefaultAsync();
+                .Include(u => u.Products)
+                .ThenInclude(p => p.Genre)
+                .Include(u => u.Products)
+                .ThenInclude(p => p.Category)
+                .FirstOrDefaultAsync(u => u.Id == id);
             var userDto = _mapper.Map<UserInfoWithRoleDto>(user);
             var roles = await _userManager.GetRolesAsync(user);
             userDto.Role = roles.Contains("Admin") ? "Admin" : "User";

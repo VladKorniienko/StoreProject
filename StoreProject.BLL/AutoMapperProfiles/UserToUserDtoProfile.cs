@@ -20,7 +20,18 @@ namespace StoreProject.BLL.AutoMapperProfiles
                 ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
             CreateMap<UserInfoWithRoleDto, User>()
                 .ForMember(dest => dest.Products, opt => opt.Ignore());
-            CreateMap<ProductPartialDto, Product>().ReverseMap(); //necessary for nested mapping
+
+            //necessary for nested mapping
+            CreateMap<Product, ProductPartialDto>()
+                .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => Convert.ToBase64String(src.Icon)))
+                .ForMember(dest => dest.Screenshots, opt => opt
+                .MapFrom(src => src.Screenshots.Select(screenshot => Convert.ToBase64String(screenshot)).ToList()));
+            CreateMap<ProductPartialDto, Product>()
+                .ForMember(dest => dest.Genre, opt => opt.Ignore())
+                .ForMember(dest => dest.Category, opt => opt.Ignore())
+                .ForMember(dest => dest.Users, opt => opt.Ignore());
         }
     }
 }

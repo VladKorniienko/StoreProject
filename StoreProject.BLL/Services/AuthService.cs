@@ -101,7 +101,7 @@ namespace StoreProject.BLL.Services
 
             //try
             //{
-                await _userManager.RemoveFromRoleAsync(user, Roles.Admin);
+            await _userManager.RemoveFromRoleAsync(user, Roles.Admin);
             //}
             //catch
             //{
@@ -202,6 +202,7 @@ namespace StoreProject.BLL.Services
             return new AuthenticationResponse()
             {
                 Id = user.Id,
+                Role = roles.Contains("Admin") ? "Admin" : "User",
                 Token = tokenString,
                 RefreshToken = refreshToken
             };

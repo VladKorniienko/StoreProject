@@ -9,6 +9,7 @@ namespace StoreProject.BLL.Dtos.Token
     public class AuthenticationResponse
     {
         public string Id { get; set; }
+        public string Role { get; set; }
         public string Token { get; set; }
         public string RefreshToken { get; set; }
     }
