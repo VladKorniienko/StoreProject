@@ -22,9 +22,21 @@ namespace StoreProject.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var products = await _productService.GetProducts();
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1 || pageSize > 1000) pageSize = 10; // Adjust max page size as necessary
+
+            var products = await _productService.GetProducts(pageNumber, pageSize);
+
+            var totalItems = await _productService.GetTotalProducts();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            Response.Headers.Append("Total-Count", totalItems.ToString());
+            Response.Headers.Append("Total-Pages", totalPages.ToString());
+            Response.Headers.Append("Current-Page", pageNumber.ToString());
+            Response.Headers.Append("Page-Size", pageSize.ToString());
+
             return Ok(products);
         }
         [HttpGet("{id}")]
@@ -43,7 +55,7 @@ namespace StoreProject.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        //[Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult> PutProduct(string id, [FromForm]ProductCreateOrUpdateDto product)
         {
             await _productService.UpdateProduct(product, id);

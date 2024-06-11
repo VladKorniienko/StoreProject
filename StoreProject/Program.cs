@@ -90,7 +90,8 @@ app.UseCors(x => x
             .WithOrigins("https://localhost:3000", "https://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials());
+            .AllowCredentials()
+            .WithExposedHeaders("Total-Count", "Total-Pages", "Current-Page", "Page-Size"));
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

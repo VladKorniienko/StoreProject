@@ -40,9 +40,11 @@ namespace StoreProject.BLL.AutoMapperProfiles
         }
         private byte[] ConvertIFormFileToByteArray(IFormFile formFile)
         {
-            using var memoryStream = new MemoryStream();
-            formFile.CopyTo(memoryStream);
-            return memoryStream.ToArray();
+            
+                using var memoryStream = new MemoryStream();
+                formFile.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+           
         }
  
     }

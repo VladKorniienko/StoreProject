@@ -22,9 +22,9 @@ namespace StoreProject.BLL.Services
             _productValidator = productValidator;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetProducts()
+        public async Task<IEnumerable<ProductDto>> GetProducts(int pageNumber, int pageSize)
         {
-            var products = await _unitOfWork.Products.GetAllDetailsWithUsers();
+            var products = await _unitOfWork.Products.GetAllDetailsWithUsers(pageNumber, pageSize);
             var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
             return productsDto;
         }
@@ -130,6 +130,10 @@ namespace StoreProject.BLL.Services
                 throw new NotFoundException($"Product with the ID {id} doesn't exist.");
             }
             return product;
+        }
+        public async Task<int> GetTotalProducts()
+        {
+            return await _unitOfWork.Products.CountAsync();
         }
     }
 }
