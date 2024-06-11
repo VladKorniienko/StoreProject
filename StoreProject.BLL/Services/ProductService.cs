@@ -6,6 +6,7 @@ using StoreProject.DAL.Interfaces;
 using StoreProject.DAL.Models;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace StoreProject.BLL.Services
 {
@@ -14,18 +15,30 @@ namespace StoreProject.BLL.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<ProductCreateOrUpdateDto> _productValidator;
+        private readonly IMemoryCache _cache;
 
-        public ProductService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<ProductCreateOrUpdateDto> productValidator)
+        private const string ProductListCacheKey = "ProductList";
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper,
+            IValidator<ProductCreateOrUpdateDto> productValidator, IMemoryCache cache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _productValidator = productValidator;
+            _cache = cache;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts(int pageNumber, int pageSize)
         {
-            var products = await _unitOfWork.Products.GetAllDetailsWithUsers(pageNumber, pageSize);
-            var productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+            string cacheKey = $"{ProductListCacheKey}_{pageNumber}_{pageSize}";
+            if (!_cache.TryGetValue(cacheKey, out IEnumerable<ProductDto> productsDto))
+            {
+                var products = await _unitOfWork.Products.GetAllDetailsWithUsers(pageNumber, pageSize);
+                productsDto = _mapper.Map<IEnumerable<ProductDto>>(products);
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+               .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+
+                _cache.Set(cacheKey, productsDto, cacheEntryOptions);
+            }
             return productsDto;
         }
 
@@ -54,6 +67,7 @@ namespace StoreProject.BLL.Services
 
             await _unitOfWork.Products.AddAsync(newProduct);
             await _unitOfWork.SaveAsync();
+            ClearProductCache();
             return _mapper.Map<ProductDto>(newProduct);
         }
 
@@ -64,6 +78,7 @@ namespace StoreProject.BLL.Services
             //if the product exists, delete it from db
             await _unitOfWork.Products.DeleteAsync(product);
             await _unitOfWork.SaveAsync();
+            ClearProductCache();
         }
 
         public async Task UpdateProduct(ProductCreateOrUpdateDto productToUpdate, string id)
@@ -84,6 +99,7 @@ namespace StoreProject.BLL.Services
             //if the product exists, update it in db
             await _unitOfWork.Products.UpdateAsync(existingProduct);
             await _unitOfWork.SaveAsync();
+            ClearProductCache();
         }
         private async Task CheckIfDuplicateNameExists(string name, string id = null)
         {
@@ -134,6 +150,17 @@ namespace StoreProject.BLL.Services
         public async Task<int> GetTotalProducts()
         {
             return await _unitOfWork.Products.CountAsync();
+        }
+        private void ClearProductCache()
+        {
+            if (_cache != null)
+            {
+                var memoryCache = _cache as MemoryCache;
+                if (memoryCache != null)
+                {
+                    memoryCache.Clear();
+                }
+            }
         }
     }
 }
