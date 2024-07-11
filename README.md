@@ -20,6 +20,11 @@ After some research, I decided to utilize HttpOnly cookies, although at first, m
 In my implementation, the client sends a login request with the user's data and receives two HTTPOnly cookies with corresponding tokens. If the client wants to access protected API endpoints, it sends these cookies alongside the request, and the server takes the access token from the cookie and puts it into the context, thus giving the user access to the endpoint.
 
 ### - Custom middleware for handling exceptions
+### - Services
+
+Services use AutoMapper to convert between models and DTOs. I also created different AutoMapper profiles for each entity.
+
+Custom validators are leveraged in Services to make sure only valid data is being transferred.
 ### - Repository and UnitOfWork patterns
 ### - Caching
 
