@@ -5,7 +5,11 @@ Users can create an account, log in, view and change their balance, buy products
 Admins can additionally manage all users and products.
 The front-end part is located [here](https://github.com/VladKorniienko/StoreClientAngular).
 ## Features
-### - 3-layered Web API in .NET 8
+### - Layered Architecture - Web API .NET 8
+- Presentation Layer
+- Business Logic Layer
+- Data Access Layer
+- Common (Constants + Exceptions)
 ### - ASP.NET Core Identity
 ### - JWT authentication (with refresh tokens)
 
@@ -17,10 +21,16 @@ In my implementation, the client sends a login request with the user's data and 
 
 ### - Custom middleware for handling exceptions
 ### - Repository and UnitOfWork patterns
-### Caching
+### - Caching
 
 I implemented caching for products due to the frequent calls to this data. I used `IMemoryCache` through dependency injection in my ProductService. 
 
 Before fetching products from the database, a cache key specific to the requested page and page size is constructed. First, it is checked if the data corresponding to the cache key exists in the cache. If the data is not found, it fetches the products from the database, maps them using AutoMapper, and stores the result in the cache with a sliding expiration of 5 minutes. If the data is found in the cache, it directly returns the cached data.
 
 Methods for adding, deleting, and altering Products include a `ClearProductCache` call after modifying the database to ensure that any cached data related to products is invalidated and cleared from the cache. This maintains data consistency between the database and the cache.
+
+### - Configuration
+
+Service configurations and dependency injection setup are provided using extension methods for each layer.
+
+Entities and their relationships are managed by separate configuration classes via Fluent API. These classes implement the `IEntityTypeConfiguration<TEntity>` interface provided by EF Core.
