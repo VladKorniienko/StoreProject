@@ -11,7 +11,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: StoreProject
 
     steps:
       - uses: actions/checkout@v4
@@ -19,13 +22,13 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '3.1'
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o "StoreProject/StoreProject.csproj"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -34,7 +37,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
@@ -53,4 +56,4 @@ jobs:
           app-name: 'storeApp'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A12F2EEBAD9A4C0BAA732F78C6231595 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EE038DA1B13E4192AB9631C7073DFD94 }}
