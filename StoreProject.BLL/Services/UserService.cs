@@ -39,7 +39,7 @@ namespace StoreProject.BLL.Services
         //}
         public async Task<IEnumerable<UserInfoWithRoleDto>> GetUsers()
         {
-            var users = _userManager.Users.Include(u => u.Products);
+            var users = _userManager.Users.Include(u => u.Products).ToList();
             var usersDto = new List<UserInfoWithRoleDto>();
             foreach (var user in users)
             {
