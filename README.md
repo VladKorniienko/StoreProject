@@ -1,4 +1,5 @@
 # Store
+## The app's demo has been deployed on Azure: [link to demo](https://storeappfront-hhd7akevdeejdfdd.polandcentral-01.azurewebsites.net/) and [link to the API](https://storeapp.azurewebsites.net/api/genres)
 ## Description
 This application shares many features with Google Play Market, AppStore from Apple, Steam, and other app marketplaces.
 Users can create an account, log in, view and change their balance, buy products, and view their library.
