@@ -8,13 +8,16 @@ using StoreProject.BLL.Dtos.Token;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+
 // Add services to the container.
 //so-called "composition root"
-
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.ConfigureDAL(builder.Configuration);
 builder.Services.ConfigureBLL(builder.Configuration);
 builder.Services.AddMemoryCache();
